@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCBA.Life</title>
+    <meta name="description" content="ate joy bat down di ko rin alam ahahahhh">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="resources/css/login.css">
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"> -->
+    <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<!-- <div class="login-main">
+    <div class="noise-bg"></div>
+
+    <div class="main-login">
+        <div class="login-area">
+            <h2 style="display: flex; justify-content: center; position: relative; margin-bottom: 25px;">NCBA.LIFE</h2>
+            <h4 >User ID</h4>
+            <input type="textbox" class="text-input" id="user_id">
+            <h4>Password</h4>
+            <input type="password" class="text-input" id="user_password">
+            <button type="button" class="form-button" id="login-button"><h2 style=" display: flex; justify-content: center; text-align: center;">Log in</h2></button>      
+        </div>
+    </div>
+</div> -->
+
+<body>
+
+    <div class="noise-bg"></div>
+
+    <div class="split-card">
+        
+        <div class="login-side" id="auth-container">
+            <div id="auth-content">
+                <div class="login-header">
+                    <h2>Welcome to NCBA.LIFE</h2>
+                    <p>Access your student portal</p>
+                </div>
+
+                <form class="login-form">
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="user_id" placeholder="Student number">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="user_password" placeholder="Min. 8 characters">
+                    </div>
+
+                    <div class="form-actions">
+                        <!-- <label class="remember-me">
+                            <input type="checkbox"> Remember for 30 days
+                        </label> -->
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" id="login-button" class="btn-primary">Log in</button>
+                    
+                </form>
+
+                <div class="register-prompt">
+                    <p>Don't have an account? <a href="#" id="toggle-auth">Sign Up</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="intro-side">
+            <div class="intro-content">
+                <h1>Designed by students, <br/> Designed for students.</h1>
+                <p>Stay informed with exclusive business school events, critical announcements, and community networking—anywhere you go.</p>
+            </div>
+
+            <div class="dashboard-preview">
+                <div class="mock-card"></div>
+                <div class="mock-card"></div>
+                <div class="mock-card"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="resources/javascript/localhost.js"></script>
+<script src="resources/javascript/login.js"></script>

@@ -1,0 +1,242 @@
+/* --- Base Reset & Typography --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* --- Your Existing Background --- */
+.noise-bg {
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    z-index: 2;
+    background-color: #ffe3c6;
+    overflow: hidden; 
+    pointer-events: none;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.noise-bg::after {
+    content: "";
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(211, 226, 109, 0.843) 0%, transparent 30%),
+        radial-gradient(at 25% 10%, rgba(245, 158, 11, 0.8) 0%, transparent 30%),
+        radial-gradient(at 50% 50%, rgba(219, 39, 120, 0.523) 0%, transparent 30%);
+    background-size: 200% 200%;
+    animation: drift-optimized 3s ease-in-out infinite alternate;
+    will-change: transform; 
+}
+
+@keyframes drift-optimized {
+    from { transform: translate(0, 0) rotate(0deg); }
+    to { transform: translate(10%, 5%) rotate(3deg); }
+}
+
+/* --- Split Card Layout --- */
+.split-card {
+    display: flex;
+    width: 95vw;
+    height: 90vh;
+    border-radius: 20px;
+    box-shadow: 25px 25px 50px -12px rgba(0, 0, 0, 0.5);
+    background: transparent; /* Deep dark blue/black */
+    overflow: hidden; /* Keeps the inner corners rounded */
+    z-index: 10;
+}
+
+/* --- Left Side: Login Form --- */
+.login-side {
+    /* flex: 1; */
+    padding: 60px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #ffffff;
+    
+    /* Dark glass effect for readability */
+    background: rgba(9, 11, 16, 0.75); 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05); /* Subtle divider line */
+}
+
+.login-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.login-header p {
+    color: #8A8F9E;
+    font-size: 14px;
+    margin-bottom: 40px;
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    color: #8A8F9E;
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #2A2D3A;
+    padding: 10px 0;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-bottom: 1px solid #ffffff;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+
+.remember-me {
+    color: #8A8F9E;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.forgot-link {
+    color: #E2B255; /* Warm accent color matching your background */
+    text-decoration: none;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #1C202B;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #2A2D3A;
+    transform: translateY(-2px) ease-in-out;
+    transition: translateY 0.8s ease-in
+}
+
+.register-prompt {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #8A8F9E;
+}
+
+.register-prompt a {
+    color: #E2B255;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* --- Right Side: Intro & Graphics --- */
+.intro-side {
+    flex: 1;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    
+    /* Lighter glass effect to let the vibrant animated colors pop */
+    background: rgba(21, 24, 34, 0.3); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+   /* Add these lines to center the inner text */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;  
+    text-align: center;
+}
+
+.intro-content h1 {
+    font-size: 60px;
+    font-family: montserrat;
+    font-weight:2000;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+}
+
+.intro-content p{
+    color: #ffffff;
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 100%;
+    text-shadow: 1px 1px #1C202B;
+}
+
+/* Placeholder for the dashboard mockups to recreate the image's vibe */
+.dashboard-preview {
+    filter: blur(2px);
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 120%;
+    height: 100%;
+    transform: rotate(-5deg) translateY(0px); /* Creates that angled look */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    opacity: 0.8;
+    z-index: -1
+}
+
+.mock-card {
+    margin-top: 100px;
+    background: #1C202B;
+    border-radius: 12px;
+    height: 200px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid #2A2D3A;
+}
+
+/* --- Transition Animation --- */
+#auth-content {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateY(10px); /* Subtle slide down effect */
+}
