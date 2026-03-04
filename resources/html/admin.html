@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCBA Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin.css">
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"> -->
+    <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<!-- <meta name="description" content="ate joy bat down di ko rin alam ahahahhh"> -->
+
+<div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;"></div>
+
+<body>
+    <div class="background"></div>
+    <nav style="border-bottom: 1px solid;">
+        <div class="logo">NCBA.LIFE</div>
+        <div style="font-weight: 600; font-size: 0.9rem;">
+            Admin Portal <span style="opacity: 0.5">/ 2026</span>
+        </div>
+        <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
+            <span class="icon-sun">☀️</span>
+            <span class="icon-moon">🌙</span>
+        </button>
+    </nav>
+    
+    <nav class="admin-nav">
+        <button class="nav-btn active" data-target="manage-announcements">Manage Announcements</button>
+        <button class="nav-btn" data-target="manage-events">Manage Events</button>
+    </nav>
+
+    <main>
+    <div class="admin-content"> 
+        <section id="manage-announcements" class="admin-section active">
+            <div class="bento-card manage-announcements">
+                <h3>CREATE NEW ANNOUNCEMENT</h3>
+                <form name="manage-announcement" id="form-announcement">
+                    <h4>Title</h4>
+                    <textarea class="text-input content"; placeholder="Title here..." id="announcement-title"  oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                    
+                    <h4>Content</h4>
+                    <textarea class="text-input content"name="text" placeholder="Content here..." id="announcement-content" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                    
+                    <h4>Type of Announcement</h4>
+                    <select id="typeOfAnnouncement" class="select">
+                        <option value="academic">Academic</option>
+                        <option value="facility">Facility</option>
+                        <option vlaue="others">Others...</option>
+                    </select>
+
+                    <input type="file" id="announcement-file" accept=".png, .jpeg" style="margin-top: 20px;">
+                    
+                    <div style="display: flex; gap: 12px;">
+                        <button class="form-button submit" value="submit" name="submit"><strong>POST</strong></button>
+                        <button class="form-button preview" value="preview" name="preview" id="announcement-preview"><strong>PREVIEW</strong></button>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="bento-card preview" id="announcement-preview-container">
+                <p style="opacity: 0.5;">Announcement preview will appear here...</p>
+            </div>
+        </section>
+        
+        <section id="manage-events" class="admin-section">
+            <div class="bento-card manage-events">
+                <h3>CREATE NEW EVENT</h3>
+                <form name="manage-events" id="form-events">
+                    <h4>Event Header</h4>
+                    <textarea class="text-input content" placeholder="Event header here..." id="event-header" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                    
+                    <h4>Event Subheader</h4>
+                    <textarea class="text-input content" placeholder="Event subheader here..." id="event-subheader" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                    
+                    <h4>Event Image URL (Optional if uploading)</h4>
+                    <input type="text" class="text-input" placeholder="https://..." id="event-image">
+
+                    <h4>Upload Image</h4>
+                    <input type="file" id="event-file" accept=".png, .jpeg" style="margin-top: 10px;">
+
+                    <div style="display: flex; gap: 12px;">
+                        <button class="form-button submit" value="submit" name="submit"><strong>POST EVENT</strong></button>
+                        <button class="form-button preview" value="preview" name="preview" id="event-preview-btn"><strong>PREVIEW</strong></button>
+                    </div>
+                </form>
+            </div>
+            <div class="bento-card preview" id="event-preview">
+                <p style="opacity: 0.5;">Event preview will appear here...</p>
+            </div>
+        </section>
+    </div>
+    </main>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../javascript/localhost.js"></script>
+    <script src="../javascript/admin/manage.js"></script>
+    <script src="../javascript/index.js"></script>
+    <script src="../javascript/darkmode.js"></script>
+
+</body>
+</html>
