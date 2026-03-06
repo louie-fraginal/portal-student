@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('reg_email').value;
         const password = document.getElementById('reg_password').value;
         const confirm = document.getElementById('reg_confirm').value;
+        const program = document.getElementById('reg_program').value;
 
         
 
@@ -76,6 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
             options: {
                 data: {
                     full_name: capitalizeWords(name), // This stores the name in the user_metadata
+                    profile_picture: null,
+                    department: program,
+                    user_type: 'student'
                 }
             }
         });
@@ -116,6 +120,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="input-group">
                     <label>Email Address</label>
                     <input type="email" id="reg_email" placeholder="student@ncba.edu.ph" required>
+                </div>
+                <div class="input-group">
+                    <label>Program</label>
+                    <select name="program" id="reg_program">
+                        <option value="" null>Pick a department...</option>
+                        <option value="ISSOC">ISSOC</option>
+                        <option value="JPIA">JPIA</option>
+                        <option value="SABELA">SABELA</option>
+                        <option value="HM">HM</option>
+                        <option value="BSBA">BSBA</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label>Password</label>

@@ -28,7 +28,8 @@ window.addEventListener('DOMContentLoaded', function() {
         classElementsDarkMode('post-card-bento');
         classElementsDarkMode('post-modal-card');
         classElementsDarkMode('modal-content');
-        classElementsDarkMode('post-card')
+        classElementsDarkMode('post-card');
+        classElementsDarkMode('modal-comments-sidebar')
     }
     });
 
@@ -37,7 +38,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // ========== IF USER HAS DARK MODE ENABLED BEFORE, ENABLE DARK MODE ==========
     if (savedTheme === 'dark') {
         body.classList.add('dark-mode');
-        const classes = ['bento-card', 'announce-area', 'notice-item', 'post-card-bento', 'post-modal-overlay', 'post-modal-card', 'modal-content', 'dept-link'];
+        const classes = ['bento-card', 'announce-area', 'notice-item', 'post-card-bento', 'post-modal-overlay', 'post-modal-card', 'modal-content', 'dept-link', 'modal-comments-sidebar'];
         classes.forEach(group => classElementsDarkMode(group));
     }
 
@@ -46,7 +47,7 @@ window.addEventListener('DOMContentLoaded', function() {
         const isDark = body.classList.contains('dark-mode');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
 
-        const classes = ['bento-card', 'announce-area', 'notice-item', 'post-card-bento', 'post-modal-overlay', 'post-modal-card', 'modal-content', 'dept-link'];
+        const classes = ['bento-card', 'announce-area', 'notice-item', 'post-card-bento', 'post-modal-overlay', 'post-modal-card', 'modal-content', 'dept-link', 'modal-comments-sidebar'];
 
         if (isDark) {
             classes.forEach(group => classElementsDarkMode(group));

@@ -41,16 +41,6 @@ async function fetchNotices() {
     return data || [];
 }
 
-async function fetchRecentNotice() {
-    const {data, error} = await window.supabaseClient
-    .from('notices')
-    .select('*')
-    .order('created_at', {ascending: false})
-    .limit(1);
-
-    return data[0]?.id;
-}
-
 async function fetchClubs() {
     const { data, error } = await window.supabaseClient
         .from('department')
@@ -99,7 +89,7 @@ function renderNotices(notices) {
 
         button.innerHTML = `
             <small style="color: ${color}; font-weight: 700;">${notice.department}</small>
-            <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: var(--text-main)">${checkStringLength(notice.content, 50)}</p>
+            <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: var(--text-main)">${window.checkStringLength(notice.content, 50)}</p>
         `;
 
         button.style.cssText = `
@@ -220,6 +210,78 @@ async function fetchEvents() {
     return data || [];
 }
 
+async function fetchRecents() {
+    const {data, error} = await window.supabaseClient
+        .from('department_posts')
+        .select('*')
+        .order('date', {ascending: false})
+        .limit(10);
+
+    if (error) console.error('FAH!', error)
+    return data || [];
+}
+
+function renderRecents(recents) {
+    const container = document.getElementById('events-area-container')
+    if (!container) return;
+    
+    if (recents.length === 0 ) {
+        container.innerHTML = `error404`
+        return;
+    }
+
+    container.innerHTML = ``;
+    const track = document.createElement('div');
+    track.className = 'slider-track';
+
+
+
+    recents.forEach(compilation => {
+        if (compilation.image_1) {
+        const slide = document.createElement('div')
+        slide.className = 'hero-slide';
+        slide.innerHTML = `
+        <img src='${compilation.image_1}' class="events-bg" style=""; width: 120%; height: 120%;>
+        <div class="hero-content">
+            <span class="tag" style="opacity:70%;">Recently</span>
+            <h3 style="margin: 5px 0; color: white;">${compilation.department}</h3>
+            <p style="opacity: 0.7; font-size: 0.8rem;">${new Date(compilation.date).toLocaleDateString()}</p>
+        </div>`
+        track.appendChild(slide);
+        }
+    });
+    container.appendChild(track);
+    if (recents.length > 1) {
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'slider-btn prev';
+        prevBtn.innerHTML = '←';
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'slider-btn next';
+        nextBtn.innerHTML = '→';
+
+        container.appendChild(prevBtn);
+        container.appendChild(nextBtn);
+
+        let currentIndex = 0;
+        const totalSlides = recents.length;
+
+        const updateSlider = () => {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        };
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        });
+    }
+}
+
 function renderEvents(events) {
     const container = document.getElementById('main-hero-area')
     if (!container) return;
@@ -294,16 +356,18 @@ function delay(ms) {
 // 4. MAIN EXECUTION
 async function init() {
     console.log("Initializing Dashboard...");
-    const [notices, clubs, events] = await Promise.all([
+    const [notices, clubs, events, recents] = await Promise.all([
         fetchNotices(),
         fetchClubs(),
-        fetchEvents()
+        fetchEvents(),
+        fetchRecents()
     ]);
 
 
     renderNotices(notices);
     renderClubs(clubs);
     renderEvents(events);
+    renderRecents(recents);
     // showPopUpAnnouncement('Welcome to NCBA.life!', "You presence is much appreciated.")
     // await delay(3000)
     // showPopUpAnnouncement('Welcome to NCBA.life!', "You presence is much appreciated.")
@@ -313,18 +377,7 @@ async function init() {
     // showPopUpAnnouncement('SABELA', 'LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM', null, images);
 }
 
-function checkStringLength(string, length) {
-    // If string length more than length, then cut off until the 20th char. Then add "... Read more"
-    if (string.length >= length) {
-        const thisString = (string.slice(0, length) + "... <p style='color: var(--text-main)'><strong>Read more...</strong></p>");
-        console.log(thisString)
-        return thisString;
-    }
-    else {
-        const newString = string;
-        return string;
-    }
-}
+
 
 const channel = window.supabaseClient
     .channel('table-db-changes')
@@ -341,7 +394,7 @@ const channel = window.supabaseClient
             if (payload.eventType === 'INSERT') {
                 const newNotice = payload.new;
                 renderNotices(notices);
-                showPopUpAnnouncement(('Update from: ' + newNotice.department), checkStringLength(newNotice.message, 20), newNotice.id);
+                showPopUpAnnouncement(('Update from: ' + newNotice.department), window.checkStringLength(newNotice.message, 20), newNotice.id);
             }
         }
     ).subscribe()
@@ -433,7 +486,7 @@ function showPopUpAnnouncement(title, message, id, images) {
     
     toast.innerHTML = `
         <strong style="display: block; margin-bottom: 5px; font-size: 0.95rem;">📢 ${title}</strong>
-        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">${checkStringLength(message, 20)}</p>
+        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">${window.checkStringLength(message, 20)}</p>
     `;
 
     container.appendChild(button);

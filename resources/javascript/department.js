@@ -1,22 +1,4 @@
 // ========== DEPARTMENT PAGE CODE PROPERTY OF LOUIE! ==========
-// ========== OPEN THE FULL IMAGE FUNCTION (GLOBAL) ==========
-window.openFullImage = function(url) {
-    const fullView = document.createElement('div');
-    fullView.className = 'full-image-overlay';
-    
-    fullView.innerHTML = `
-        <button class="close-full-view">&times;</button>
-        <img src="${url}" class="full-view-content">
-    `;
-
-    fullView.onclick = (e) => {
-        if (e.target !== document.querySelector('.full-view-content')) {
-            fullView.remove();
-        }
-    };
-
-    document.body.appendChild(fullView);
-};
 
 // ==========  MAP OF EACH DEPARTMENT AND ITS PROPERTIES/METADATA ==========
 const DEPT_MAP = {
@@ -25,6 +7,7 @@ const DEPT_MAP = {
         shortName: 'JPIA',
         color: '#ef4444',
         intro: 'The premier organization for accountancy students at NCBA, dedicated to professional excellence and integrity in the field of accounting.',
+        fb_link: 'https://web.facebook.com/jpia.ncbaf',
         image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200'
     },
     'BSBA': {
@@ -32,6 +15,7 @@ const DEPT_MAP = {
         shortName: 'BSBA',
         color: '#3b82f6',
         intro: 'Shaping the next generation of business leaders and entrepreneurs through innovative management education and practical experience.',
+        fb_link: 'https://web.facebook.com/profile.php?id=100054337128757',
         image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200'
     },
     'ISSOC': {
@@ -39,6 +23,7 @@ const DEPT_MAP = {
         shortName: 'ISSOC',
         color: '#4b5563',
         intro: 'Advancing technological literacy and innovation within the Information Systems community at NCBA.',
+        fb_link: 'https://web.facebook.com/ncba.issoc',
         image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200'
     },
     'SABELA': {
@@ -46,6 +31,7 @@ const DEPT_MAP = {
         shortName: 'SABELA',
         color: '#ec4899',
         intro: 'Promoting excellence in the arts, education, and social sciences, fostering a community of critical thinkers and educators.',
+        fb_link: 'https://web.facebook.com/ncbasabela',
         image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=1200'
     },
     'HM': {
@@ -53,6 +39,7 @@ const DEPT_MAP = {
         shortName: 'HM',
         color: '#f59e0b',
         intro: 'Training students for global careers in the hospitality and tourism industry with a focus on service excellence and culinary arts.',
+        fb_link: 'https://web.facebook.com/ncbachmofficial',
         image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1200'
     },
     'ANNOUNCEMENT': {
@@ -60,6 +47,7 @@ const DEPT_MAP = {
         shortName: 'announcement',
         color: '#7bff83',
         intro: 'The official announcements from the National College Business and Arts Fairview.',
+        fb_link: '',
         image: ''
 
     }
@@ -83,6 +71,8 @@ async function initDepartment() {
     document.getElementById('dept-name').textContent = dept.name;
     document.getElementById('dept-intro').textContent = dept.intro;
     document.getElementById('dept-header').style.backgroundImage = `url(${dept.image})`;
+    document.getElementById('dept-link').addEventListener('click', function(e) {window.open(dept.fb_link)});
+    document.getElementById('dept-link').style.cssText = `cursor: pointer;`;
     document.title = `NCBA.Life | ${dept.shortName}`;
 
     const posts = await fetchDepartmentPosts(deptId);
@@ -127,10 +117,11 @@ async function fetchDepartmentPosts(deptId) {
                 thisIsThePost.push({
                     title: post.title,
                     content: post.content,
-                    cover_photo: post.image_1,
-                    images: [post.image_2, post.image_3, post.image_4, post.image_5],
+                    cover_photo: post.image_1 ? post.image_1 : null,
+                    images: post.image_1 ? [post.image_1, post.image_2, post.image_3, post.image_4, post.image_5] : [],
                     date: post.date,
-                    id: post.id
+                    id: post.id,
+                    department: post.department
                 })
             })
 
@@ -146,45 +137,11 @@ function renderPosts(posts) {
 
     posts.forEach((post, index) => {
         const card = document.createElement('div');
-
         card.className = 'post-card-bento';
         card.style.transitionDelay = `${(index % 3) * 0.1}s`;
 
         card.addEventListener('click', function() {
-            console.log(`clicked:`, post.id);
-
-            const overlay = document.createElement('div');
-            overlay.className = 'post-modal-overlay';
-            
-            overlay.innerHTML = `
-                <button class="close-btn">&times;</button>
-                <div class="post-modal-card">
-                    <h2 style="color: var(--dept-color)">${post.title}</h2>
-                    <div class="modal-content">${post.content}</div>
-                    ${post.cover_photo ? `<img src="${post.cover_photo}" class="modal-image" onclick="openFullImage('${post.cover_photo}')" style="cursor:pointer;"> ` : ''}
-
-                    <div class="modal-gallery">
-                        ${post.images && post.images.length > 0 
-                            ? post.images
-                                .filter(img => img) // ========== FILTER ONLY TO IMAGES ==========
-                                .map(img => `<img src="${img}" class="gallery-image" onclick="openFullImage('${img}')" style="cursor:pointer;"> `)
-                                .join('') // ========== IF NO IMAGE THEN DISPLAY NOTHING ==========
-                            : '' 
-                        }
-                    </div>
-
-                    <p class="modal-date">${Date(post.date).toUpperCase()}</p>
-                </div>
-            `;
-            
-            // ========== CLOSE BUTTON ==========
-            overlay.onclick = (e) => {
-                if (e.target === overlay || e.target.classList.contains('close-btn')) {
-                    overlay.remove();
-                }
-            };
-
-            document.body.appendChild(overlay);
+            window.openPostModal(post, post.images)
         });
 
         // ========== THE ACTUAL POST THAT'S GONNA BE POSTED UP ON THE DEPARTMENT PAGE ==========
@@ -199,7 +156,6 @@ function renderPosts(posts) {
 
         card.style.cssText = `
             cursor: pointer;
-
         `;
 
         grid.appendChild(card);
@@ -226,3 +182,4 @@ function setupScrollAnimations() {
 }
 
 initDepartment();
+window.DEPT_MAP = DEPT_MAP
