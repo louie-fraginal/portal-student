@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../javascript/localhost.js"></script>
     <script src="../javascript/index.js"></script>
+    <script src="../javascript/ui-util.js"></script>
     <script src="../javascript/social.js"></script>
     <script src="../javascript/darkmode.js"></script>
     <script>
@@ -73,9 +74,42 @@
             padding: 0;
             overflow: hidden;
         }
-        .sidebar-recently {
-            min-height: 180px !important;
-        }
+
+        /* Fix for the sidebar-specific slider */
+.sidebar-recently {
+    position: relative;
+    overflow: hidden; /* Clips the sliding track */
+    padding: 0 !important; /* Slider needs to touch edges */
+    min-height: 180px !important;
+}
+
+.sidebar-recently .slider-track {
+    display: flex;
+    height: 20vh;
+    width: 100%;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.sidebar-recently .hero-slide {
+    min-width: 100%;
+    height: 100%;   
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Ensure the image is visible above the card background */
+.sidebar-recently .events-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.sidebar-recently .hero-content {
+    z-index: 2; /* Text must be above the image */
+}
         
         /* Ensure the feed is scrollable but doesn't break the layout */
         .main-feed {
@@ -141,6 +175,11 @@
                 <a href="department.html?dept=BSBA" class="dept-link">BSBA</a>
                 <a href="department.html?dept=SABELA" class="dept-link">SABELA</a>
             </div>
+
+            <!-- Recently (Events Style) -->
+            <div class="bento-card events-area sidebar-recently" id="recently-container">
+                
+            </div>
         </aside>
 
         <!-- CENTER: Social Feed -->
@@ -154,19 +193,7 @@
         <aside class="right-sidebar">
             <!-- Featured (Hero Style) -->
             <div class="bento-card hero-card sidebar-featured" id="main-hero-area">
-                <p style="padding: 20px; font-size: 0.8rem; color: var(--text-muted);">Loading featured...</p>
-            </div>
-
-            <!-- Recently (Events Style) -->
-            <div class="bento-card events-area sidebar-recently" id="recently-container">
-                <div style="display: flex; justify-content: space-between; z-index: 2; position: relative;">
-                    <span class="tag" style="font-weight: 800; opacity:70%;">Recently</span>
-                </div>
-                <div style="margin-top: auto; z-index: 2; position: relative;">
-                    <h3 style="margin: 0 0 5px 0; color: white;">SABELA</h3>
-                    <p style="opacity: 0.7; font-size: 0.8rem; margin: 0;">February 6, 2026</p>
-                </div>
-                <img src="https://scontent.fmnl8-2.fna.fbcdn.net/v/t39.30808-6/630801773_874924255351532_728737826396876809_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=7b2446&_nc_ohc=g5lmZsDad-gQ7kNvwFfQLcU&_nc_oc=AdmlmW9P2pPni85Lea5SKxVxUEVZqqLgYL4QR29aJEoDMmgRLQsEhtJz6tPE29C0CdY&_nc_zt=23&_nc_ht=scontent.fmnl8-2.fna&_nc_gid=d-YcMHSC3rqgb-aMs3XJSg&oh=00_AftCf2-Cf9zoZiFpmeCtZHuyZusmNQm_b8eFa3OH_nL-4w&oe=699E0072" class="events-bg">
+                <p style="padding: 20px; font-size: 0.8rem; color: var(--text-muted); max-height: 3vh !important;">Loading featured...</p>
             </div>
 
             <!-- Announcement Board -->
@@ -182,7 +209,16 @@
                     </div>
                 </div>
             </div>
+
         </aside>
+    </div>
+    <div class="post-container" aria-label="Create Post">
+        <span class="post-button" onclick="">+</span>
+        <span class="chat-button">
+            <svg width="25" height="25" viewBox="0 0 25 25">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+        </span>
     </div>
 </body>
 </html>

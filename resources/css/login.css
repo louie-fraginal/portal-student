@@ -116,6 +116,44 @@ body {
     border-bottom: 1px solid #ffffff;
 }
 
+/* --- Select Dropdown Styling --- */
+.input-group select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #2A2D3A;
+    padding: 10px 0;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+    cursor: pointer;
+    
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238A8F9E' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 5px) center;
+}
+
+.input-group select:focus {
+    border-bottom: 1px solid #ffffff;
+}
+
+.input-group select option {
+    background-color: #1C202B; 
+    color: #ffffff;
+    padding: 10px;
+}
+
+/* Fix for placeholder/first option color */
+.input-group select:invalid,
+.input-group select option[value=""] {
+    color: #8A8F9E;
+}
+
 .form-actions {
     display: flex;
     justify-content: space-between;
@@ -239,4 +277,29 @@ body {
 .fade-out {
     opacity: 0;
     transform: translateY(10px); /* Subtle slide down effect */
+}
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-area: footer;
+    max-height: 100px;
+    background-color: rgba(145, 145, 145, 0.158);
+    display: flex;
+    justify-content: center;
+    line-height: 2;
+    padding: 20px 20px 20px 20px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.tag {
+    background: var(--inverted-text-color);
+    color: var(--invert-card-bg);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    text-transform: uppercase;
 }

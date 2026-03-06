@@ -119,6 +119,7 @@
             color: var(--text-muted);
             margin: 0;
             display: -webkit-box;
+            line-clamp: 4;
             -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
@@ -168,6 +169,7 @@
         <header class="dept-header bento-card" id="dept-header">
             <div class="dept-header-content">
                 <span class="dept-badge" id="dept-badge">Department</span>
+                <span class="dept-badge dept-link" id="dept-link">Facebook</span>
                 <h1 id="dept-name">Department Name</h1>
                 <p class="dept-intro" id="dept-intro">Loading introduction...</p>
             </div>
@@ -179,12 +181,16 @@
         </section>
     </main>
 
+    
     <div class="footer">
-        NCBA.LIFE © 2026 • All rights reserved.
+        <p class="tag" style="background-color: #98ffb3 !important; color: black">Computer Programming 2 • Group 1</p>
+        <p class="tag" style="background-color: black; color: #98ffb3">NCBA.LIFE © 2026 • All rights reserved.</p>
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../javascript/localhost.js"></script>
+    <script src="../javascript/ui-util.js"></script>
     <script src="../javascript/department.js"></script>
     <script src="../javascript/darkmode.js"></script>
     <script src="../javascript/index.js"></script>
