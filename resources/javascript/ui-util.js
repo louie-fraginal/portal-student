@@ -71,9 +71,9 @@ window.openPostModal = async function (post, images, isNotice = false) {
 
     // Unified data mapping
     const content = post.content || post.message || '';
-    const title = post.title || post.header || ''
-    const authorName = post.department_key || post.author_name || (post.profiles?.full_name) || post.department // fallback for official departments
-    const deptColor = window.DEPT_MAP[post.department_key || post.department]?.color || '#ffffff';
+    const title = post.title || post.header || '' // header comes from official announcements
+    const authorName = (post.author_name ? post.author_name : post.department_key) // Check if post came from a user first, if not then department.
+    const deptColor = window.DEPT_MAP[post.department_key]?.color || '#ffffff';
 
     console.log(post)
     console.log(post.department)
@@ -341,7 +341,7 @@ window.createPostOverlay = function () {
 
         // Ensure total does not exceed 5
         if (selectedFiles.length + files.length > 5) {
-            window.openAlert('caution',"You can only upload a maximum of 5 images.");
+            window.openAlert('caution', "You can only upload a maximum of 5 images.");
             return;
         }
 
@@ -413,7 +413,7 @@ window.handlePostSubmission = async function (content, selectedFiles = []) {
 
         if (error) throw error;
 
-        window.openAlert('success',"Posted successfully!");
+        window.openAlert('success', "Posted successfully!");
         // Refresh feed if function exists
         if (typeof window.renderSocialFeed === 'function') window.renderSocialFeed();
 
