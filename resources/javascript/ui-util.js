@@ -569,6 +569,7 @@ window.renderChatList = async function (user) {
 
         listContainer.innerHTML = rooms.map(room => {
             const initial = room.room_name.charAt(0).toUpperCase();
+            const profile_picture = room.profile_picture || initial;
             const displayTime = formatDisplayTime(room.last_message_time);
             let safeText = room.last_message_text ? room.last_message_text.replace(/[&<>'"]/g,
                 tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag])
@@ -577,9 +578,12 @@ window.renderChatList = async function (user) {
             if (safeText.length > 30) safeText = safeText.substring(0, 30) + '...';
             const safeRoomName = room.room_name.replace(/'/g, "\\'");
 
+            const avatarHtml = room.profile_picture
+                ? `<img src="${room.profile_picture}" style="width:100%; height: 100%; object-fit: cover; border-radius: 50%">`
+                :`<div style="width: 100%; height: 100%; background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%;">${initial}</div>`;
+
             return `
-                <div class="chat-preview" onclick="window.loadConversation('${room.room_id}', '${safeRoomName}', this)">
-                    <div class="profile-avatar">${initial}</div>
+                    <div class="chat-preview" onclick="window.loadConversation('${room.room_id}', '${safeRoomName}', '${room.profile_picture}', this)">                    <div class="profile-avatar">${avatarHtml}</div>
                     <div class="chat-info">
                         <div class="chat-name-row">
                             <span class="chat-name">${room.room_name}</span>
@@ -682,6 +686,41 @@ function appendSingleMessage(msg, currentUserId) {
     setTimeout(() => container.scrollTop = container.scrollHeight, 10);
 }
 
+// We need a place to store the compressed file so your upload function can access it later.
+window.compressedChatroomPhoto = null;
+
+window.previewImage = async function (event) {
+    const input = event.target;
+    const previewImg = document.getElementById('previewImg');
+    const previewContainer = document.getElementById('previewContainer');
+    const uploadLabel = document.getElementById('uploadLabel');
+
+    if (input.files && input.files[0]) {
+        const originalFile = input.files[0];
+
+        try {
+            const compressedBlob = await compressImage(originalFile, { quality: 0.7, maxWidth: 800 });
+
+            // Save the compressed Blob, submit button can grab it later
+            window.compressedChatroomPhoto = compressedBlob;
+
+            const objectUrl = URL.createObjectURL(compressedBlob);
+            previewImg.src = objectUrl;
+            previewContainer.style.display = 'block';
+            uploadLabel.style.borderStyle = 'solid';
+
+            console.log(window.compressedChatroomPhoto);
+
+        } catch (error) {
+            console.error("Compression failed:", error);
+            uploadLabel.innerHTML = 'UPLOAD CHATROOM PHOTO';
+            if (typeof window.openAlert === 'function') {
+                window.openAlert('warning', "Failed to process image. Please try another.");
+            }
+        }
+    }
+};
+
 window.showCreateChatUI = function () {
     const container = document.querySelector('.messages-wrapper');
     if (!container) return;
@@ -693,6 +732,17 @@ window.showCreateChatUI = function () {
     container.innerHTML = `
         <div class="create-chat-room-form" style="padding: 40px; margin: 0 auto; width: 100%;">
             <h3 style="color: var(--text-main); margin-bottom: 24px; font-size: 1.5rem;">Start a New Chat</h3>
+
+            <div class="input-group" style="margin-bottom: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)" style="display: none;">
+                <label for="imageInput" id="previewContainer" style="display: none; cursor: pointer; transition: opacity 0.3s;">
+                    <img id="previewImg" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid var(--accent-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                </label>
+                <label for="imageInput" id="uploadLabel" class="btn-primary" style="display: block; width: 100%; padding: 14px; font-weight: 700; border: 2px dashed var(--accent-primary); border-radius: 12px; cursor: pointer; background: rgba(0,0,0,0.02); color: var(--accent-primary); box-sizing: border-box; transition: 0.2s; margin: 0;">
+                    📸 UPLOAD CHATROOM PHOTO
+                </label>
+                <small style="color: var(--text-muted); margin-top: -4px;">(optional)</small>
+            </div>
             
             <div class="input-group" style="margin-bottom: 20px;">
                 <label style="display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">Chatroom Name</label>
@@ -708,11 +758,6 @@ window.showCreateChatUI = function () {
                 <div id="search-results-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-color); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; z-index: 10; max-height: 200px; overflow-y: auto; margin-top: 5px; box-shadow: var(--shadow-soft);"></div>
                 
                 <div id="selected-members-tags" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;"></div>
-            </div>
-
-            <div class="input-group" style="margin-bottom: 32px; display: flex; align-items: center; gap: 12px;">
-                <input type="checkbox" id="is-public-room" style="width: 18px; height: 18px; cursor: pointer;">
-                <label for="is-public-room" style="color: var(--text-muted); font-size: 0.875rem;">Public Room? <span style="font-size: 0.75rem; opacity: 0.8;">(Anyone can search and join)</span></label>
             </div>
 
             <button id="confirm-create-room" class="btn-primary" 
@@ -780,7 +825,15 @@ window.showCreateChatUI = function () {
     if (confirmBtn) {
         confirmBtn.onclick = async () => {
             const name = document.getElementById('new-room-name').value.trim();
-            const isPublic = document.getElementById('is-public-room').checked;
+            const chatRoomPhoto = window.compressedChatroomPhoto;
+
+            // Process upload image file to database (ONLY if an image was selected)
+            let photoUrl = null;
+            if (chatRoomPhoto) {
+                // Blobs don't have names, so we just provide a default one
+                photoUrl = await uploadPostImage(chatRoomPhoto, 'chatroom_avatar.jpg');
+                window.compressedChatroomPhoto = null; 
+            }
             if (!name) return alert('Please enter a room name');
 
 
@@ -790,7 +843,7 @@ window.showCreateChatUI = function () {
             try {
                 const { data: room, error: roomError } = await window.supabaseClient
                     .from('chat_room')
-                    .insert([{ name: name, is_public: isPublic }])
+                    .insert([{ name: name, profile_picture: photoUrl }])
                     .select()
                     .single();
                 if (roomError) throw roomError;
@@ -842,6 +895,7 @@ window.openChat = async function (e) {
     const overlay = document.createElement('div');
     overlay.className = 'post-modal-overlay';
 
+
     overlay.innerHTML = `
         <div class="post-modal-card chat" style="min-width: 95vw; min-height:95vh; max-width: 95vw;">
             <!-- Left Navigation Sidebar - Simplified -->
@@ -866,7 +920,7 @@ window.openChat = async function (e) {
             </aside>
 
             <!-- Main Chat Area -->
-            <div class="main-chats-container">
+            <div class="main-chats-container" id="main-chats-container">
                 <div class="chat-header">
                     <div class="chat-header-user">
                         <div id="active-chat-avatar" style="width: 40px; height: 40px; background: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--inverted-text-color); position: relative;">
@@ -898,6 +952,34 @@ window.openChat = async function (e) {
                     </div>
                 </div>
             </div>
+
+            <!-- Right Sidebar Info -->
+            <aside class="right-sidebar-info hidden" id="chat-info-sidebar">
+                <div class="info-profile-section">
+                    <div class="info-avatar-large" id="info-room-avatar">?</div>
+                    <div class="info-room-name" id="info-room-name">Chat Name</div>
+                    
+                    <div class="info-actions-dropdown">
+                        <button class="info-actions-btn" id="info-actions-toggle">
+                            Settings ▾
+                        </button>
+                        <div class="dropdown-menu" id="info-dropdown-menu">
+                            <div class="dropdown-item" id="change-chat-name-btn">
+                                <span>✏️</span> Change Name
+                            </div>
+                            <div class="dropdown-item" id="change-chat-photo-btn">
+                                <span>📸</span> Change Photo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-members-section">
+                    <span class="info-section-title">Members</span>
+                        <div class="info-members-list" id="info-members-list">
+                             <!-- Members loaded here -->
+                        </div>
+                     </div>
+            </aside>
         </div>
     `;
 
@@ -909,7 +991,27 @@ window.openChat = async function (e) {
 
     // Listeners
     document.getElementById('open-create-chat').onclick = () => window.showCreateChatUI();
-    document.getElementById('info-btn').onclick
+    document.getElementById('info-btn').onclick = () => window.toggleInfoSidebar();
+
+    document.getElementById('change-chat-name-btn').onclick = () => window.changeChatName();
+    document.getElementById('change-chat-photo-btn').onclick = () => window.changeChatPhoto();
+
+    const actionsToggle = document.getElementById('info-actions-toggle');
+    if (actionsToggle) {
+        actionsToggle.onclick = (e) => {
+            e.stopPropagation();
+            document.getElementById('info-dropdown-menu').classList.toggle('show');
+        };
+    }
+
+    // Close dropdown on click outside
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('info-dropdown-menu');
+        const toggle = document.getElementById('info-actions-toggle');
+        if (menu && menu.classList.contains('show') && !toggle.contains(e.target)) {
+            menu.classList.remove('show');
+        }
+    });
 
     const chatInput = document.getElementById('chat-message-input');
     chatInput.addEventListener('keypress', (e) => {
@@ -930,7 +1032,113 @@ window.openChat = async function (e) {
     window.renderChatList(user);
 }
 
-window.loadConversation = async function (roomId, roomName, element) {
+window.toggleInfoSidebar = function () {
+    const sidebar = document.getElementById('chat-info-sidebar');
+    if (!sidebar) return;
+
+    sidebar.classList.toggle('hidden');
+    if (!sidebar.classList.contains('hidden')) {                
+        const roomId = window.currentChatRoomId;
+        const roomName = document.getElementById('active-chat-name').textContent;
+        // Grab the photo we saved globally in loadConversation
+        const profilePicture = window.currentChatRoomPhoto; 
+
+        if (roomId && roomName !== 'Select a chat') {
+            window.renderChatInfo(roomId, roomName, profilePicture);
+        }
+    }
+};
+
+window.renderChatInfo = async function (roomId, roomName, profilePicture) {
+    const nameEl = document.getElementById('info-room-name');
+    const avatarEl = document.getElementById('info-room-avatar');
+    const membersList = document.getElementById('info-members-list');
+
+    if (!nameEl || !avatarEl || !membersList) return;
+
+    nameEl.textContent = roomName;
+
+    // Apply the custom photo logic to the big RIGHT SIDEBAR avatar (avatarEl)
+    if (profilePicture && profilePicture !== 'null' && profilePicture !== 'undefined') {
+        avatarEl.innerHTML = `<img src="${profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        avatarEl.style.background = 'transparent'; // Optional: removes the background color if the image has transparency
+    } else {
+        avatarEl.innerHTML = roomName.charAt(0).toUpperCase();
+        avatarEl.style.background = 'var(--accent-primary)'; // Restore default background
+    }
+
+    membersList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 10px;">Loading members...</div>';
+
+    const { data, error } = await window.supabaseClient
+        .from('chat_room_member')
+        .select(`
+            member_id,
+            profiles (
+                full_name,
+                profile_picture
+            )
+        `)
+        .eq('chat_room_id', roomId);
+
+    if (error) {
+        console.error("Error fetching members:", error);
+        membersList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; padding: 10px;">Failed to load members</div>';
+        return;
+    }
+
+    membersList.innerHTML = data.map(m => `
+        <div class="info-member-item">
+            <div class="info-member-avatar">
+                ${m.profiles?.profile_picture
+            ? `<img src="${m.profiles.profile_picture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
+            : (m.profiles?.full_name?.charAt(0).toUpperCase() || '?')}
+            </div>
+            <span class="info-member-name">${m.profiles?.full_name || 'Unknown User'}</span>
+        </div>
+    `).join('');
+};
+
+
+window.changeChatName = async function () {
+    const roomId = window.currentChatRoomId;
+    if (!roomId) return;
+
+    const oldName = document.getElementById('active-chat-name').textContent;
+    const newName = prompt("Enter new chat name:", oldName);
+
+    if (newName && newName.trim() && newName !== oldName) {
+        try {
+            const { error } = await window.supabaseClient
+                .from('chat_room')
+                .update({ name: newName.trim() })
+                .eq('id', roomId);
+
+            if (error) throw error;
+
+            const trimmedName = newName.trim();
+            document.getElementById('active-chat-name').textContent = trimmedName;
+            document.getElementById('info-room-name').textContent = trimmedName;
+            document.getElementById('info-room-avatar').textContent = trimmedName.charAt(0).toUpperCase();
+            document.getElementById('active-chat-avatar').textContent = trimmedName.charAt(0).toUpperCase();
+
+            // Refresh chat list to update name there
+            if (window.currentUser) {
+                window.renderChatList(window.currentUser);
+            }
+
+            window.openAlert('success', "Chat name updated!");
+        } catch (err) {
+            console.error("Failed to update chat name:", err);
+            window.openAlert('warning', "Error: " + err.message);
+        }
+    }
+};
+
+window.changeChatPhoto = function () {
+    window.openAlert('caution', "Chat photo updates will be available soon in the next update!");
+};
+
+window.loadConversation = async function (roomId, roomName, profilePicture, element) {
     document.querySelectorAll('.chat-preview').forEach(el => el.classList.remove('active'));
     if (element) element.classList.add('active');
 
@@ -942,11 +1150,23 @@ window.loadConversation = async function (roomId, roomName, element) {
     }
 
     window.currentChatRoomId = roomId;
+    window.currentChatRoomPhoto = profilePicture;
 
     if (roomName) {
         console.log(roomName);
         document.getElementById('active-chat-name').textContent = roomName;
-        document.getElementById('active-chat-avatar').textContent = roomName.charAt(0).toUpperCase();
+        const avatarContainer = document.getElementById('active-chat-avatar');
+        if (profilePicture && profilePicture !== 'null' & profilePicture !== 'undefined') {
+            avatarContainer.innerHTML = `<img src="${profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        } else {
+            avatarContainer.innerHTML = roomName.charAt(0).toUpperCase();
+        }
+
+
+        const sidebar = document.getElementById('chat-info-sidebar hidden');
+        if (sidebar && !sidebar.classList.contains('hidden')) {
+            window.renderChatInfo(roomId, roomName, profilePicture);
+        }
     }
 
     const container = document.querySelector('.messages-wrapper');
@@ -989,42 +1209,99 @@ async function submitChatMessage(text, roomId) {
         profiles: { full_name: user.user_metadata?.full_name || 'You' }
     }
 
+    window.renderedMessagesIds.add(tempId)
     appendSingleMessage(newMsg, user.id);
 
-    if (window.chatChannel) {
-        window.chatChannel.send({
-            type: 'broadcast',
-            event: 'new_message',
-            payload: newMsg
-        });
-    }
 
-    window.supabaseClient
+    // Everyone will receive the notification via the 'postgres_changes' listener.
+    // whereas before it only goes through the broadcast changes and doesn't change a single thing in the database.
+
+    const { error } = await window.supabaseClient
         .from('message')
         .insert({
             id: tempId,
             chat_room_id: roomId,
             author_id: user.id,
-            text: text.trim()
-        }).then(({ error }) => {
-            if (error) console.error("Failed to save message: ", error);
+            text: escapeHTML(text.trim())
         });
+
+    if (error) {
+        console.error("failed to save message: ", error);
+    }
+
+
+    // THIS IS BEFORE POSTGRES_CHANGES REFRACTOR
+    // appendSingleMessage(newMsg, user.id);
+
+    // if (window.chatChannel) {
+    //     window.chatChannel.send({
+    //         type: 'broadcast',
+    //         event: 'new_message',
+    //         payload: newMsg
+    //     });
+    // }
+
+    // window.supabaseClient
+    //     .from('message')
+    //     .insert({
+    //         id: tempId,
+    //         chat_room_id: roomId,
+    //         author_id: user.id,
+    //         text: text.trim()
+    //     }).then(({ error }) => {
+    //         if (error) console.error("Failed to save message: ", error);
+    //     });
 }
 
 window.renderedMessagesIds = new Set();
 
+
+// Watch the message table and let the client know whenever a row is inserted 
+// where the 'chat_room_id' matches the room
 function subscribeToRoom(roomId, currentUserId) {
     if (window.chatChannel) window.supabaseClient.removeChannel(window.chatChannel);
 
     window.chatChannel = window.supabaseClient
         .channel(`room-${roomId}`)
-        .on('broadcast', { event: 'new_message' }, (payload) => {
-            const newMessage = payload.payload
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'message',
+                filter: `chat_room_id=eq.${roomId}`
+            },
+            (payload) => {
+                const newMessage = payload.new;
 
-            if (!window.renderedMessagesIds.has(newMessage.id)) {
-                window.renderedMessagesIds.add(newMessage.id);
-                appendSingleMessage(newMessage, currentUserId);
+                // Deduplication check
+                // Prevents the sender from seeing their own message
+                // Minutes wasted: 30 minutes
+                console.log(payload.new)
+
+                if (!window.renderedMessagesIds.has(newMessage.id)) {
+                    window.renderedMessagesIds.add(newMessage.id);
+
+                    const displayMsg = {
+                        ...newMessage,
+                        profiles: { full_name: newMessage.author_name || 'user' }
+                    };
+
+                    appendSingleMessage(displayMsg, currentUserId);
+                }
             }
-        })
+        )
         .subscribe();
+
+    // window.chatChannel = window.supabaseClient
+    //     .channel(`room-${roomId}`)
+    //     .on('broadcast', { event: 'new_message' }, (payload) => {
+    //         const newMessage = payload.payload
+
+    //         if (!window.renderedMessagesIds.has(newMessage.id)) {
+    //             window.renderedMessagesIds.add(newMessage.id);
+    //             appendSingleMessage(newMessage, currentUserId);
+    //         }
+    //     })
+    //     .subscribe();
 }
