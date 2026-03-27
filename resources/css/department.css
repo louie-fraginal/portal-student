@@ -1,0 +1,152 @@
+:root {
+    --dept-color: var(--accent-primary);
+    --dept-color-light: rgba(99, 102, 241, 0.1);
+}
+
+.dept-header {
+    grid-column: span 3;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 32px;
+    display: flex;
+    align-items: flex-end;
+    padding: 60px;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 20px;
+}
+
+.dept-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 100%);
+    z-index: 1;
+}
+
+.dept-header-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.dept-badge {
+    background: var(--dept-color);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.dept-header h1 {
+    font-size: 4rem;
+    margin: 0 0 15px 0;
+    color: white;
+    -webkit-text-fill-color: white;
+    line-height: 1;
+}
+
+.dept-intro {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    grid-column: span 3;
+}
+
+.post-card-bento {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.post-card-bento.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.post-card-bento:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+}
+
+.post-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.post-card-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.post-card-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+    display: -webkit-box;
+    line-clamp: 4;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.post-card-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--dept-color);
+}
+
+@media (max-width: 1100px) {
+    .posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dept-header h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .posts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dept-header {
+        height: auto;
+        min-height: 300px;
+        padding: 40px 20px;
+    }
+
+    .dept-header h1 {
+        font-size: 2.5rem;
+    }
+}

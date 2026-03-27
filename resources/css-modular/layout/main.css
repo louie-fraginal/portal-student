@@ -1,0 +1,136 @@
+/* resources/css-modular/layout/main.css */
+
+/* --- MAIN GRID --- */
+main {
+    max-width: 1400px;
+    margin: 40px auto 80px auto;
+    padding: 0 5%;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 24px;
+    grid-template-areas:
+        "header header header"
+        "social social social"
+        "hero hero announcements"
+        "events clubs announcements"
+        "about about about";
+}
+
+.social-area {
+    position: relative;
+    grid-area: social;
+    flex-direction: column;
+    margin-top: -10px !important;
+    min-height: 20px !important;
+    max-height: 100px !important;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+.social-area p {
+    background-color: var(--accent-primary);
+    color: var(--inverted-text-color);
+    font-size: 15px;
+    padding: 10px 5px 10px 5px;
+    border: solid white;
+    border-width: 2px;
+}
+
+.social-area:hover {
+    transform: scale(1.04);
+}
+
+.header-area {
+    position: relative;
+    grid-area: header;
+    min-height: 300px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-width: 5px;
+    border-color: white;
+}
+
+.header-area::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://scontent.fmnl44-1.fna.fbcdn.net/v/t1.15752-9/643888006_1927220877873405_3406609413427505771_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeFVbqCPgbTDq75jtWA7wNttQVNTPBiDgVRBU1M8GIOBVO8X8GW543-2GShoWaZFXkQU8Vawaj2I8zMtXMhTLC3I&_nc_ohc=D17hKk3B9pAQ7kNvwET6_3w&_nc_oc=Adl2yE_2FutGaIktsg31AlGGiQm2X-Mgw9eseLFVvi4RCtfjN8sGZp34pOxllJvjYWI&_nc_zt=23&_nc_ht=scontent.fmnl44-1.fna&_nc_ss=8&oh=03_Q7cD4wFzm5YBKVhm6v7_NrErvBFA1dAPy_hRjzh-aMYaH5A9Iw&oe=69CF2068');
+    background-size: cover;
+    background-position: right;
+    background-repeat: no-repeat;
+    filter: blur(1px);
+    z-index: -1;
+    transform: scale(1.01);
+}
+
+.hero-area { grid-area: hero; }
+.announce-area { grid-area: announcements; }
+.events-area { grid-area: events; }
+.clubs-area { grid-area: clubs; }
+.about-area { grid-area: about; grid-column: span 3; padding: 100px; }
+
+.footer {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    grid-area: footer;
+    max-height: 100px;
+    background-color: rgba(145, 145, 145, 0.158);
+    justify-content: center;
+    line-height: 2;
+    padding: 20px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* --- NEW SOCIAL FEED LAYOUT --- */
+.feed-wrapper {
+    max-width: 100%;
+    margin: 20px 0 80px 0;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 280px 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+.left-sidebar, .right-sidebar {
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* --- CENTER FEED STYLING --- */
+.main-feed {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 900px) {
+    main { display: flex; flex-direction: column; }
+}
+
+@media (max-width: 1024px) {
+    .feed-wrapper { grid-template-columns: 220px 1fr; }
+    .right-sidebar { display: none; }
+}
+
+@media (max-width: 768px) {
+    .feed-wrapper { grid-template-columns: 1fr; }
+}

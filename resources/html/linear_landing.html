@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCBA.Life | Student Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/linear.css">
+    
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../javascript/localhost.js"></script>
+    <script>
+        window.checkAuth();
+    </script>
+</head>
+<body>
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;"></div>
+
+    <nav>
+        <div class="footer-logo" style="letter-spacing: -0.05em; font-weight: 800;">NCBA.LIFE</div>
+        <ul class="nav-links">
+            <li><a href="#announcements">Announcements</a></li>
+            <li><a href="#events">Recent Updates</a></li>
+            <li><a href="#departments">Departments</a></li>
+            <li><a href="social.html">Social World</a></li>
+        </ul>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <button id="theme-toggle" style="background: transparent; border: 1px solid var(--border); color: white; padding: 0.5rem; border-radius: 6px; cursor: pointer;">
+                🌓
+            </button>
+            <a href="login.html" class="btn-open">Portal Access</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1 style="color: #98ffb3 !important;">Be informed<br> this semester.</h1>
+                <p class="section-text" style="max-width: 600px; margin: 0 auto 3rem auto; font-size: 1.1rem; line-height: 1.6;">
+                    Your central hub for exclusive business school events, critical announcements, and community networking.
+                </p>
+                <div class="hero-image" id="main-hero-area" style="min-height: 400px; position: relative; overflow: hidden;">
+                    <!-- Dynamically populated by index.js slider -->
+                    <p style="padding: 40px; color: var(--text-muted); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Loading highlights...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Announcements Section -->
+        <section class="section" id="announcements">
+            <div class="container grid-2">
+                <div>
+                    <h2 class="section-title">Official<br>Announcement Board</h2>
+                    <p class="section-text">Stay updated with the latest notices, campus news, and important deadlines from the NCBA administration and your departments.</p>
+                </div>
+                <div id="announcements-container" style="border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); max-height: 500px; overflow-y: auto;">
+                    <p style="padding: 2rem; color: var(--text-muted);">Loading notices...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social CTA Section -->
+        <section class="section">
+            <div class="container" style="text-align: center;">
+                <h2 class="section-title">Explore the social world</h2>
+                <p class="section-text" style="max-width: 600px; margin: 0 auto 2rem auto;">Connect with fellow students, join the conversation, and share your campus experiences in our exclusive community network.</p>
+                <a href="social.html" class="btn-open" style="display: inline-block; padding: 1rem 2rem; font-size: 1rem;">Enter Social Hub</a>
+            </div>
+        </section>
+
+        <!-- Recent Updates Section -->
+        <section class="section" id="events">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                    <h2 class="section-title" style="margin: 0;">Recent Updates</h2>
+                    <a href="#" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">View Archive →</a>
+                </div>
+                <div class="hero-image" id="events-area-container" style="min-height: 400px; position: relative; overflow: hidden;">
+                    <!-- Dynamically populated by index.js -->
+                    <p style="padding: 40px; color: var(--text-muted); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Loading recent activity...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Departments Section -->
+        <section class="section" id="departments">
+            <div class="container">
+                <h2 class="section-title">Visit the departments</h2>
+                <p class="section-text" style="margin-bottom: 3rem;">Explore specialized resources and updates from each academic department.</p>
+                <div id="clubs-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <p style="color: var(--text-muted);">Loading departments...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <div class="footer-logo" style="margin-bottom: 1rem; font-weight: 800;">NCBA.LIFE</div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted);">Cubao Campus 8913-8785<br>Taytay Campus 8286-2928<br>Fairview Campus 8442-6956</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Portal</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="social.html">Social Hub</a></li>
+                        <li><a href="profile.html">Student Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Campus</h4>
+                    <ul>
+                        <li><a href="#">Cubao</a></li>
+                        <li><a href="#">Taytay</a></li>
+                        <li><a href="#">Fairview</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Links</h4>
+                    <ul>
+                        <li><a href="#">Enrollment</a></li>
+                        <li><a href="#">LMS</a></li>
+                        <li><a href="#">Student Handbook</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">X (Twitter)</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div style="margin-top: 4rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 2rem;">
+                <p class="tag" style="background: #98ffb3; color: black; font-weight: 800;">Computer Programming 2 • Group 1</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">NCBA.LIFE © 2026 • All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../javascript/ui-util.js"></script>
+    <script src="../javascript/index.js"></script>
+    <script src="../javascript/darkmode.js"></script>
+</body>
+</html>

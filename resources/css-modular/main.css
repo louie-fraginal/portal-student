@@ -1,0 +1,29 @@
+/* resources/css-modular/main.css */
+
+/* 1. Theme and Variables */
+@import url('theme/variables.css');
+@import url('theme/dark-mode.css');
+
+/* 2. Base Styles */
+@import url('base/reset.css');
+@import url('base/utilities.css');
+
+/* 3. Layout */
+@import url('layout/navigation.css');
+@import url('layout/main.css');
+@import url('layout/chat.css');
+
+/* 4. Components */
+@import url('components/cards.css');
+@import url('components/modals.css');
+@import url('components/slider.css');
+
+
+/* 5. Page-specific Styles (Imported as needed by HTML files, but listed here for reference) */
+/* 
+@import url('pages/admin.css');
+@import url('pages/chat.css');
+@import url('pages/social.css');
+@import url('pages/auth.css');
+@import url('pages/profile.css');
+*/

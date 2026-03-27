@@ -1,0 +1,34 @@
+:root {
+    /* Transitions */
+    --transition-speed: 0.3s;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+
+    /* Light Theme Variables (Default) */
+    --bg-color: #f8f9fc;
+    --text-main: #363636;
+    --text-muted: #666;
+    --card-bg: rgba(255, 255, 255, 0.314);
+    --accent-primary: #007a0a;
+    --accent-secondary: #ffffff;
+    --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 20px 50px -12px #98ffb380;
+    --support-tab-color: #424242;
+    --transparent-bg-color: #ffffff63;
+    --inverted-text-color: #ffffff;
+    --invert-card-bg: #1a1a1a;
+    --border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme Overrides */
+body.dark-mode {
+    --bg-color: #0a0a0a;
+    /* Darker background */
+    --text-main: #e4e4e4;
+    --text-muted: #b3b3b3;
+    --card-bg: rgba(0, 0, 0, 0.3);
+    --accent-primary: #98ffb3;
+    --invert-card-bg: #ffffffcb;
+    --inverted-text-color: #1a1a1a;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --transparent-bg-color: rgba(0, 0, 0, 0.5);
+}

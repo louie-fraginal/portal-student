@@ -1,0 +1,52 @@
+body.dark-mode {
+    --bg-color: #0c0d10;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --card-bg: #1d1d1d;
+    --accent-primary: #98ffb3;
+    --shadow-soft: 0 8px 24px rgba(0,0,0,0.4);
+    --border-color: #30363d;
+    --input-bg: #0d1117;
+    
+    /* Legacy / Extended Variables */
+    --invert-card-bg: #ffffffcb;
+    --inverted-text-color: #1a1a1a;
+    --transparent-bg-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Mapping .dark (from theme.css) to body.dark-mode or allowing it as a utility */
+body.dark-mode, .dark {
+    --card: #17181c;
+    --ring: #1ef128;
+    --input: #22303c;
+    --muted: #181818;
+    --accent: #061622;
+    --border: #242628;
+    --chart-1: #1e9df1;
+    --chart-2: #00b87a;
+    --chart-3: #f7b928;
+    --chart-4: #17bf63;
+    --chart-5: #e0245e;
+    --popover: #000000;
+    --primary: #1ef128;
+    --sidebar: #17181c;
+    --secondary: #f0f3f4;
+    --background: #000000;
+    --foreground: #e7e9ea;
+    --destructive: #f4212e;
+    --shadow-color: rgba(29,161,242,0.25);
+    --sidebar-ring: #1da1f2;
+    --sidebar-accent: #061622;
+    --sidebar-border: #38444d;
+    --card-foreground: #d9d9d9;
+    --sidebar-primary: #1da1f2;
+    --muted-foreground: #72767a;
+    --accent-foreground: #1c9cf0;
+    --popover-foreground: #e7e9ea;
+    --primary-foreground: #ffffff;
+    --sidebar-foreground: #d9d9d9;
+    --secondary-foreground: #0f1419;
+    --destructive-foreground: #ffffff;
+    --sidebar-accent-foreground: #1c9cf0;
+    --sidebar-primary-foreground: #ffffff;
+}

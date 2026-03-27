@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social | NCBA.Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS! -->
+    <link rel="stylesheet" href="/resources/css-modular/main.css">
+    <link rel="stylesheet" href="/resources/css-modular/components/cards.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/resources/css-modular/pages/social.css">
+
+
+    <!-- Script codes-->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../javascript/localhost.js"></script>
+    <script src="../javascript/index.js"></script>
+    <script src="../javascript/ui-util.js"></script>
+    <script src="../javascript/social-v2.js"></script>
+    <script src="../javascript/darkmode.js"></script>
+    <script>
+        window.checkAuth();
+    </script>
+</head>
+
+<body>
+    <div class="v2-wrapper">
+        <!-- Left Sidebar -->
+        <aside>
+            <div class="logo">NCBA.LIFE</div>
+
+            <nav class="v2-nav">
+                <a href="#" class="v2-nav-link active">
+                    <span class="v2-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg></span>
+                    <span>Feed</span>
+                </a>
+                <a href="department.html?dept=ANNOUNCEMENT" class="v2-nav-link">
+                    <span class="v2-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg></span>
+                    <span>Announcements</span>
+                </a>
+                <a href="department.html?dept=ISSOC" class="v2-nav-link">
+                    <span class="v2-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg></span>
+                    <span>BSIS</span>
+                </a>
+                <a href="department.html?dept=HM" class="v2-nav-link">
+                    <span class="v2-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                            <line x1="6" y1="1" x2="6" y2="4"></line>
+                            <line x1="10" y1="1" x2="10" y2="4"></line>
+                            <line x1="14" y1="1" x2="14" y2="4"></line>
+                        </svg></span>
+                    <span>BSHM</span>
+                </a>
+                <a href="department.html?dept=BSBA" class="v2-nav-link">
+                    <span class="v2-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg></span>
+                    <span>BSBA</span>
+                </a>
+                <a href="department.html?dept=JPIA" class="v2-nav-link">
+                    <span class="v2-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg></span>
+                    <span>BSA</span>
+                </a>
+                <a href="department.html?dept=SABELA" class="v2-nav-link">
+                    <span class="v2-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg></span>
+                    <span>BSED</span>
+                </a>
+            </nav>
+
+            <div class="v2-card v2-featured-card" id="recently-container">
+                <!-- Loaded via JS -->
+            </div>
+
+            <div class="v2-card v2-profile-card" style="cursor: pointer;" onclick="window.location.href='profile.html'">
+                <div class="v2-avatar" id="user-initial">U</div>
+                <div class="v2-profile-info">
+                    <div class="v2-username" id="user-fullname">Loading...</div>
+                    <div class="v2-userrole" id="user-role-display"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Feed -->
+        <main class="v2-main-feed" id="social-feed-container" style="margin-top: 0; ">
+            <!-- Loaded via JS -->
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside>
+            <div class="v2-card v2-featured-card" id="main-hero-area">
+                <!-- Loaded via JS -->
+            </div>
+
+            <div class="v2-card" style="flex: 1; min-height: 400px; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; font-size: 1rem;">Announcements</h3>
+                    <div
+                        style="width: 8px; height: 8px; border-radius: 50%; background: var(--v2-green); box-shadow: 0 0 10px var(--v2-green);">
+                    </div>
+                </div>
+                <div id="announcements-container" style="flex: 1; overflow-y: auto; scrollbar-width: none;">
+                    <!-- Loaded via JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="v2-floating-actions">
+        <button class="v2-fab secondary" onclick="window.openChat(event)">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg></span>
+        </button>
+        <button class="v2-fab" onclick="window.createPostOverlay()">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg></span>
+        </button>
+    </div>
+    
+</body>
+
+</html>

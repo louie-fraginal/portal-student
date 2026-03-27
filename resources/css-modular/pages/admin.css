@@ -1,0 +1,70 @@
+/* resources/css-modular/pages/admin.css */
+
+.admin-nav {
+    max-width: 1300px;
+    margin: 20px auto;
+    padding: 0 5%;
+    display: block;
+    gap: 12px;
+}
+
+.nav-btn {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nav-btn.active {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: #000;
+}
+
+.admin-section {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    animation: fadeIn 0.4s ease-out;
+    margin-bottom: 60px;
+}
+
+.admin-section.active { display: grid; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.text-input, .select, textarea.content {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.form-button {
+    flex: 1;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 40px;
+    text-transform: uppercase;
+}
+
+.submit {
+    background-color: var(--accent-primary);
+    color: #000;
+}

@@ -303,3 +303,44 @@ body {
     font-size: 0.75rem;
     text-transform: uppercase;
 }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) {
+    .split-card {
+        flex-direction: column;
+        height: auto;
+        min-height: 80vh;
+        width: 90vw;
+        overflow-y: auto;
+    }
+    
+    .intro-side {
+        display: none; /* Hide intro on smaller screens for a cleaner login experience */
+    }
+
+    .login-side {
+        padding: 40px 30px;
+        flex: 1;
+        width: 100%;
+        border-right: none;
+    }
+
+    .login-header h2 {
+        font-size: 24px;
+    }
+    
+    .intro-content h1 {
+        font-size: 40px;
+    }
+}
+
+@media (max-height: 700px) {
+    .split-card {
+        height: 95vh;
+        overflow-y: auto;
+    }
+    .login-side {
+        padding: 30px 40px;
+        justify-content: flex-start;
+    }
+}

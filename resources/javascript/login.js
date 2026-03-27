@@ -1,14 +1,26 @@
 async function authUser(email, password) {
-    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password,
-    });
+    try {
+        console.log("Attempting sign in for:", email);
 
-    if (error) {
-        alert("Login failed: " + error.message);
-    } else {
-        // Successful login! Supabase automatically saves the session token in the background.
-        window.location.href = 'index.html';
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+
+        if (error) {
+            console.error("Login Error:", error.message);
+            window.openAlert('warning',"Login failed: " + error.message);
+            return;
+        }
+
+        if (data.session) {
+            window.location.href = 'index.html';
+        } else {
+            
+        }
+    } catch (err) {
+        console.error("Unexpected login error:", err);
+        window.openAlert('caution' ,"An unexpected error occurred. Please try again.");
     }
 }
 
@@ -20,9 +32,8 @@ async function registerUser(email, password) {
 
     if (error) {
         console.error("Registration Error:", error.message);
-        alert("Error: " + error.message);
+        window.openAlert('caution' ,"Error: " + error.message);
     } else {
-        alert("Registration successful! Check your email for a confirmation link.");
         console.log("User created:", data.user);
     }
 }
@@ -32,11 +43,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginButton) {
         loginButton.addEventListener('click', function(e) {
             e.preventDefault();
+            loginButton.disabled = true;
             const user_id = document.getElementById('user_id').value.trim();
             const user_password = document.getElementById('user_password').value.trim();
             console.log(user_id, user_password);
             
             authUser(user_id, user_password);
+            loginButton.disabled = false;
         })
     }
 
@@ -123,13 +136,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="input-group">
                     <label>Program</label>
-                    <select name="program" id="reg_program">
-                        <option value="" null>Pick a department...</option>
-                        <option value="ISSOC">ISSOC</option>
-                        <option value="JPIA">JPIA</option>
-                        <option value="SABELA">SABELA</option>
-                        <option value="HM">HM</option>
-                        <option value="BSBA">BSBA</option>
+                    <select name="program" id="reg_program" required>
+                        <option value="">Pick a department...</option>
+                        ${Object.keys(window.DEPT_MAP)
+                            .filter(id => ['ISSOC', 'JPIA', 'SABELA', 'HM', 'BSBA'].includes(id))
+                            .map(id => `<option value="${id}">${id}</option>`)
+                            .join('')}
                     </select>
                 </div>
                 <div class="input-group">

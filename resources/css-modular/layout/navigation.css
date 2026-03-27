@@ -1,0 +1,62 @@
+/* Navigation and Header Layout */
+
+nav {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.5rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1300px;
+    z-index: 1000;
+    margin: 0 auto;
+}
+
+body.dark-mode nav {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    color: var(--accent-primary);
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.05em;
+}
+
+.theme-btn {
+    background: var(--card-bg);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    transition: transform 0.3s ease;
+}
+
+body.dark-mode .theme-btn {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.icon-moon {
+    display: none;
+}
+
+body.dark-mode .icon-sun {
+    display: none;
+}
+
+body.dark-mode .icon-moon {
+    display: inline;
+}
+
+/* Admin specific nav bits if needed globally */
+.admin-nav {
+    max-width: 1300px;
+    margin: 20px auto;
+    padding: 0 5%;
+    display: block;
+    gap: 12px;
+}

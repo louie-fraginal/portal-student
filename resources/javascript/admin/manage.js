@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Supabase Upload Function
     async function uploadToSupabase(blob, fileName, bucket = 'images') {
-        const filePath = `${Date.now()}_${fileName.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+        const filePath = `admin/${Date.now()}_${fileName.replace(/[^a-zA-Z0-9.]/g, '_')}`;
         const { data, error } = await window.supabaseClient.storage
             .from(bucket)
             .upload(filePath, blob, {
@@ -80,9 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<strong>UPLOADING...</strong>';
 
-                const title = document.getElementById('announcement-title').value;
                 const content = document.getElementById('announcement-content').value;
-                const category = document.getElementById('typeOfAnnouncement').value.toUpperCase();
+                const department = document.getElementById('typeOfAnnouncement').value;
                 const fileInput = document.getElementById('announcement-file');
                 let imageUrl = '';
 
@@ -96,10 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     .from('notices')
                     .insert([
                         { 
-                            message: content, 
-                            category: category, 
-                            image_url: imageUrl,
-                            created_at: new Date().toISOString()
+                            department: department,
+                            content: content, 
+                            image_url: imageUrl
                         }
                     ]);
 
@@ -146,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         { 
                             header: header, 
                             subheader: subheader, 
-                            image_url: imageUrl,
-                            created_at: new Date().toISOString()
+                            image_url: imageUrl
                         }
                     ]);
 
@@ -172,20 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
 
         container.innerHTML = '';
-        container.style.display = 'block'; 
-        container.style.borderStyle = 'solid'; 
-
+        
         const card = document.createElement('div');
         card.className = 'post-card-bento visible';
         card.style.opacity = '1';
         card.style.transform = 'none';
 
+        const deptColor = window.DEPT_MAP[data.category]?.color || 'var(--accent-primary)';
+
         card.innerHTML = `
             ${data.image ? `<img src="${data.image}" class="post-card-image" alt="Preview">` : ''}
-            <h2 class="post-card-title">${data.title || 'Untitled'}</h2>
-            <p class="post-card-text">${data.content || 'No content provided.'}</p>
+            <div style="padding: 15px 0;">
+                <span class="tag" style="background: ${deptColor}; color: white; margin-bottom: 10px; display: inline-block;">${data.category}</span>
+                <h2 class="post-card-title">${data.title || 'Official Announcement'}</h2>
+                <p class="post-card-text">${data.content || 'No content provided.'}</p>
+            </div>
             <div class="post-card-footer">
-                <span>${data.category || 'PREVIEW'}</span>
                 <span>Just Now</span>
             </div>
         `;
@@ -198,9 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (announcementPreviewBtn) {
         announcementPreviewBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            const title = document.getElementById('announcement-title').value;
             const content = document.getElementById('announcement-content').value;
-            const category = document.getElementById('typeOfAnnouncement').value.toUpperCase();
+            const department = document.getElementById('typeOfAnnouncement').value;
             const fileInput = document.getElementById('announcement-file');
             
             let imageUrl = '';
@@ -209,9 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             showPreview('announcement-preview-container', {
-                title,
+                title: 'Announcement Preview',
                 content,
-                category,
+                category: department,
                 image: imageUrl
             });
         });
@@ -235,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showPreview('event-preview', {
                 title: header,
                 content: subheader,
-                category: 'FEATURED EVENT',
+                category: 'ANNOUNCEMENT',
                 image: imageUrl
             });
         });

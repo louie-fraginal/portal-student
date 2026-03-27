@@ -1,0 +1,104 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.chat_room (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  name character varying NOT NULL,
+  is_public boolean NOT NULL,
+  CONSTRAINT chat_room_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.chat_room_member (
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  member_id uuid NOT NULL,
+  chat_room_id uuid NOT NULL,
+  CONSTRAINT chat_room_member_pkey PRIMARY KEY (member_id, chat_room_id),
+  CONSTRAINT chat_room_member_member_id_fkey FOREIGN KEY (member_id) REFERENCES public.profiles(id),
+  CONSTRAINT chat_room_member_chat_room_id_fkey FOREIGN KEY (chat_room_id) REFERENCES public.chat_room(id)
+);
+CREATE TABLE public.department (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  text text,
+  CONSTRAINT department_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.department_posts (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  date timestamp with time zone NOT NULL DEFAULT now(),
+  title character varying NOT NULL,
+  content character varying DEFAULT ''::character varying,
+  department text NOT NULL,
+  image_1 text,
+  image_2 text,
+  image_3 text,
+  image_4 text,
+  image_5 text,
+  author_id uuid,
+  CONSTRAINT department_posts_pkey PRIMARY KEY (id),
+  CONSTRAINT department_posts_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.events (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  header text NOT NULL,
+  subheader text NOT NULL,
+  image_url text,
+  CONSTRAINT events_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.message (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  text text NOT NULL,
+  chat_room_id uuid NOT NULL,
+  author_id uuid NOT NULL,
+  CONSTRAINT message_pkey PRIMARY KEY (id),
+  CONSTRAINT message_chat_room_id_fkey FOREIGN KEY (chat_room_id) REFERENCES public.chat_room(id),
+  CONSTRAINT message_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.notices (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  department text,
+  content text,
+  image_url text,
+  CONSTRAINT notices_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.post_comments (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  user_id uuid NOT NULL,
+  post_id text NOT NULL,
+  content text NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT post_comments_pkey PRIMARY KEY (id),
+  CONSTRAINT post_comments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.post_likes (
+  post_id bigint NOT NULL,
+  user_id uuid NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT post_likes_pkey PRIMARY KEY (post_id, user_id),
+  CONSTRAINT post_likes_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.department_posts(id),
+  CONSTRAINT post_likes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.profiles (
+  id uuid NOT NULL,
+  full_name text,
+  department text,
+  profile_picture text,
+  user_type text,
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.user_posts (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  author_id uuid NOT NULL,
+  content text NOT NULL,
+  image_1 text,
+  image_2 text,
+  image_3 text,
+  image_4 text,
+  image_5 text,
+  CONSTRAINT user_posts_pkey PRIMARY KEY (id, author_id),
+  CONSTRAINT user_posts_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id)
+);

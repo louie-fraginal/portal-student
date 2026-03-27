@@ -1,0 +1,196 @@
+:root {
+    --profile-color: #98ffb3;
+    --profile-color-light: rgba(152, 255, 179, 0.1);
+}
+
+.profile-header {
+    grid-column: span 3;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 32px;
+    display: flex;
+    align-items: flex-end;
+    padding: 60px;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 20px;
+    background-image: url('../images/wickedbackground(1).svg');
+}
+
+.profile-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 100%);
+    z-index: 1;
+}
+
+.profile-header-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 32px;
+    background: var(--profile-color-light);
+    color: var(--profile-color);
+    font-size: 3rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--profile-color);
+    box-shadow: 0 0 30px var(--profile-color-light);
+    flex-shrink: 0;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+}
+
+.profile-badge {
+    background: var(--profile-color);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: inline-block;
+    color: #000;
+}
+
+.profile-header h1 {
+    font-size: 3.5rem;
+    margin: 0 0 10px 0;
+    color: white;
+    -webkit-text-fill-color: white;
+    line-height: 1.1;
+}
+
+.profile-intro {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    grid-column: span 3;
+}
+
+.post-card-bento {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    transform: translateY(30px);
+    cursor: pointer;
+    min-height: 10vh !important;
+}
+
+.post-card-bento.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.post-card-bento:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--profile-color);
+}
+
+.post-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.post-card-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.post-card-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+    display: -webkit-box;
+    line-clamp: 4;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: pre-wrap;
+}
+
+.post-card-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--profile-color);
+}
+
+.empty-state {
+    grid-column: span 3;
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+@media (max-width: 1100px) {
+    .posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-header h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .posts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-header {
+        height: auto;
+        min-height: 300px;
+        padding: 40px 20px;
+    }
+
+    .profile-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .profile-header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}

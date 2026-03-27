@@ -1,0 +1,137 @@
+/* Specific styles for index.html to remove inline styling */
+
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+nav {
+    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.1));
+}
+
+.portal-info {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.portal-info .year {
+    opacity: 0.5;
+}
+
+.header-area h1 {
+    color: var(--accent-primary, #98ffb3) !important;
+}
+
+.header-tag {
+    color: white;
+    max-width: 600px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.loading-text {
+    padding: 40px;
+    color: var(--text-muted);
+}
+
+.social-area .tag {
+    justify-content: center;
+    display: flex;
+}
+
+.announce-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.announce-header h2 {
+    margin: 0;
+}
+
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.announcements-wrapper {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+#announcements-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.announce-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.archive-link {
+    color: var(--text-main);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+#events-area-container {
+    background: #1a1a1a;
+    color: white;
+}
+
+.department h2 {
+    font-size: 1.1rem;
+}
+
+#department-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.department-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.department-button:hover {
+    transform: scale(1.05);
+}
+
+.department-button {
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: left;
+    width: 100%;
+
+}
+
+.footer-tag-primary {
+    background-color: var(--accent-primary, #98ffb3) !important;
+    color: black;
+}
+
+.footer-tag-dark {
+    background-color: black;
+    color: var(--accent-primary, #98ffb3);
+}

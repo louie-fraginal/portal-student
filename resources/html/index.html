@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NCBA.Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/index-specific.css">
 
     <link rel="icon" type="image/x-icon" href="../../favicon.ico">
     <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -14,22 +16,19 @@
     <link rel="manifest" href="/site.webmanifest">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../javascript/localhost.js"></script>
-    <script>
-        checkAuth();
-    </script>
 </head>
 
 <!-- <meta name="description" content="ate joy bat down di ko rin alam ahahahhh"> -->
 
-<div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;"></div>
+<div id="toast-container"></div>
 
 <body>
     <div class="noise-bg"></div>
     <div class="contact">Cubao Campus 8913-8785 • Taytay Campus 8286-2928 • Fairview Campus 8442-6956</div>
-    <nav style="border-bottom: 1px solid;">
+    <nav>
         <div class="logo">NCBA.LIFE</div>
-        <div style="font-weight: 600; font-size: 0.9rem;">
-            Student Portal <span style="opacity: 0.5">/ 2026</span>
+        <div class="portal-info">
+            Student Portal <span class="year">/ 2026</span>
         </div>
         <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
             <span class="icon-sun">☀️</span>
@@ -39,61 +38,53 @@
 
     <main>
         <section class="header-area">
-            <h1 style="color: #98ffb3 !important;">Be informed<br> this semester.</h1>
-            <p class="header-tag" style="color: white; max-width: 600px; font-size: 1.1rem; line-height: 1.6;">
+            <h1>Be informed<br> this semester.</h1>
+            <p class="header-tag">
                 Your central hub for exclusive business school events, critical announcements, and community networking.
             </p>
         </section>
 
         <div class="bento-card hero-card hero-area" id="main-hero-area">
             <!-- Dynamically populated by index.js slider -->
-            <p style="padding: 40px; color: var(--text-muted);">Loading highlights...</p>
+            <p class="loading-text">Loading highlights...</p>
         </div>
 
-        <div class="social-card social-area" id="social-area" onclick="window.location = 'social.html'">
-            <p class="tag"; style="justify-content: center; display: flex;">Explore the social world</p>
+        <div class="social-card social-area" id="social-area" onclick="window.location = 'social-v2.html'">
+            <p class="tag">Explore the social world</p>
         </div>
 
         <div class="bento-card announce-area">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0;">
-                <h2 style="margin:0">Announcement Board</h2>
-                <div class="live-indicator" style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display:inline-block"></div>
+            <div class="announce-header">
+                <h2>Announcement Board</h2>
+                <div class="live-indicator"></div>
             </div>
             
-            <div style="position: relative; flex: 1; min-height: 0";>
-                <div id="announcements-container" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; overflow-y:auto; padding-right: 10px">
+            <div class="announcements-wrapper">
+                <div id="announcements-container">
                     <p style="color: #999;">Loading notices...</p>  
                 </div>
             </div>
 
-            <div style="flex-shrink: 0; margin-top: auto; padding-top: 20px; text-align: center;">
-                <a href="#" style="color: var(--text-main); font-size: 0.85rem; font-weight: 600; text-decoration: none;">View Archive →</a>
+            <div class="announce-footer">
+                <a href="department.html?dept=ANNOUNCEMENT" class="archive-link">View Archive →</a>
             </div>
         </div>
 
-        <div class="bento-card events-area" style="background: #1a1a1a; color: white;" id="events-area-container">
+        <div class="bento-card events-area" id="events-area-container">
             <h2>Loading...</h2>
-            <!-- <img src="https://scontent.fmnl8-2.fna.fbcdn.net/v/t39.30808-6/630801773_874924255351532_728737826396876809_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=7b2446&_nc_ohc=g5lmZsDad-gQ7kNvwFfQLcU&_nc_oc=AdmlmW9P2pPni85Lea5SKxVxUEVZqqLgYL4QR29aJEoDMmgRLQsEhtJz6tPE29C0CdY&_nc_zt=23&_nc_ht=scontent.fmnl8-2.fna&_nc_gid=d-YcMHSC3rqgb-aMs3XJSg&oh=00_AftCf2-Cf9zoZiFpmeCtZHuyZusmNQm_b8eFa3OH_nL-4w&oe=699E0072" class="events-bg">
-            <div style="display: flex; justify-content: space-between;">
-                <span class="tag"; style="font-weight: 800; opacity:70%;">Recently</span>
-            </div>
-            <div style="margin-top: auto; z-index: 2">
-                <h3 style="margin: 0 0 5px 0; color: white; z-index: 100">SABELA</h3>
-                <p style="opacity: 0.7; font-size: 0.9rem; margin: 0; z-index: 5;">February 6, 2026</p>
-            </div> -->
         </div>
 
-        <div class="bento-card clubs-area">
-            <h2 style="font-size: 1.1rem;">Visit the departments</h2>
-            <div id="clubs-container" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="bento-card department-area">
+            <h2>Visit the departments</h2>
+            <div id="department-container">
                  <p style="color: #999;">Loading departments...</p>
             </div>
         </div>
     </main>
 
     <div class="footer">
-        <p class="tag" style="background-color: #98ffb3 !important; color: black">Computer Programming 2 • Group 1</p>
-        <p class="tag" style="background-color: black; color: #98ffb3">NCBA.LIFE © 2026 • All rights reserved.</p>
+        <p class="tag footer-tag-primary">Computer Programming 2 • Group 1</p>
+        <p class="tag footer-tag-dark">NCBA.LIFE © 2026 • All rights reserved.</p>
     </div>
 
     <script src="../javascript/ui-util.js"></script>

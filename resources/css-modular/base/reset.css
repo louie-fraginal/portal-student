@@ -1,0 +1,64 @@
+/* Basic Reset and Typography */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    margin: 0;
+    background-color: var(--bg-color);
+    background: transparent !important;
+    overflow-x: hidden;
+    transition: color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+}
+
+textarea:focus-within .input-group {
+    border-color: var(--accent-primary);
+}
+
+h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    margin-bottom: 20px;
+    color: var(--accent-primary);
+}
+
+h2 {
+    font-size: 1.25rem;
+    margin: 0 0 20px 0;
+}
+
+h3 {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+    margin: 0 0 24px 0;
+}
+
+h4 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 20px 0 8px 0;
+}
+
+p {
+    line-height: 1.6;
+    margin-top: 0;
+    font-size: 0.6rem;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}

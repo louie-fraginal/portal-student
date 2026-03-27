@@ -1,46 +1,140 @@
-window.openPostModal = async function(post, images) {
+// Pre-warm the cache when the page loads
+window.addEventListener('DOMContentLoaded', async () => {
+    const { data } = await window.supabaseClient.auth.getUser();
+    if (data?.user) {
+        window.currentUser = data.user;
+        window.currentUserId = data.user.id;
+        window.renderChatList(window.currentUser)
+    }
+});
+
+window.openAlert = async function (type, text) {
+    alertType = {
+        'warning': {
+            title: 'WARNING',
+            color: '#ef4444',
+        },
+        'success': {
+            title: 'SUCCESS',
+            color: '#7bff83'
+        },
+        'caution': {
+            title: 'CAUTION',
+            color: '#ffbe4d'
+        }
+    };
+
+    const typeColor = alertType[type].color;
+    const typeTitle = alertType[type].title;
+
+    console.log(typeColor);
+
     const overlay = document.createElement('div');
     overlay.className = 'post-modal-overlay';
-    
-    // Use the DEPT_MAP we shared across files
-    const deptColor = window.DEPT_MAP[post.department]?.color || '#6366f1';
+    overlay.style.backdropFilter = 'blur(0px)'
 
     overlay.innerHTML = `
-        <div class="post-modal-card ig-layout">
-            <div class="modal-main">
-                ${Array.isArray(images) && images[0] ? 
-                    `<img src="${images[0]}" class="modal-image" onclick="openFullImage('${images[0]}')">` : ''}
-                <div class="modal-gallery">
-                ${Array.isArray(images) 
-                    ? images
-                        .slice(1)
-                        .filter(img => img && img !== 'null' && img !== '') 
-                        .map(img => `<img src="${img}" class="gallery-image" onclick="openFullImage('${img}')">`)
-                        .join('') 
-                    : '' 
-                }
+        <div class="post-modal-card alert fadeIn">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <h2 style="color:${typeColor};">${typeTitle}</h2>
+                <button class="close-btn" style="position: static; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+
+            <h3 style="margin-top: 20px; word-break: break-word; white-space: pre-wrap; color: var(--text-main);">${text}</h3>
+            <p style="color: var(--text-muted)">This pop-up will close in a bit.</p>
+        </div>
+    `
+
+    overlay.onclick = (e) => {
+        if (e.target === overlay || e.target.classList.contains('close-btn')) overlay.remove();
+    };
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.classList.remove('fadeIn');
+        overlay.classList.add('fadeOut');
+
+        overlay.addEventListener('animationend', (e) => {
+            console.log("Animation detected:", e.animationName);
+            if (e.animationName === 'slideUpFadeOut') {
+                console.log('Removing from DOM now...');
+                overlay.remove();
+            }
+        }, { once: true });
+
+    }, 5000);
+}
+
+window.openPostModal = async function (post, images, isNotice = false) {
+    const overlay = document.createElement('div');
+    overlay.className = 'post-modal-overlay';
+
+    // Unified data mapping
+    const content = post.content || post.message || '';
+    const title = post.title || post.header || ''
+    const authorName = post.department_key || post.author_name || (post.profiles?.full_name) || post.department // fallback for official departments
+    const deptColor = window.DEPT_MAP[post.department_key || post.department]?.color || '#ffffff';
+
+    console.log(post)
+    console.log(post.department)
+    console.log(window.DEPT_MAP[post.department]);
+
+    // Filter images to see if we actually have any valid URLs
+    const validImages = Array.isArray(images) ? images.filter(img => img && img !== 'null' && img !== '') : [];
+    const hasImages = validImages.length > 0;
+
+    // Use 'ig-layout' for images, 'vertical-layout' for text-only
+    const layoutClass = hasImages ? 'ig-layout' : 'vertical-layout';
+
+    overlay.innerHTML = `
+        <div class="post-modal-card ${layoutClass}">
+            ${!hasImages ? `
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <span class="v2-tag" style="background-color: ${deptColor}; color: #000000">${authorName}</span>
+                    <button class="close-btn" style="position: static; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
                 </div>
-                    <p class="modal-date">${new Date(post.date).toDateString()}</p>
+            ` : ''}
+
+            <div class="modal-main" style="${!hasImages ? 'border: none; padding: 20px;' : ''}">
+                ${hasImages ? `
+                    <img src="${validImages[0]}" class="modal-image" onclick="window.openFullImage('${validImages[0]}')">
+                    <div class="modal-gallery">
+                        ${validImages.slice(1).map(img => `<img src="${img}" class="gallery-image" onclick="window.openFullImage('${img}')">`).join('')}
+                    </div>
+                ` : `
+                    <div class="modal-content" style="color: #ccc; padding: 0; border: none; font-size: 0.9rem">${content}</div>
+                `}
+            </div>
+
+            <aside class="modal-comments-sidebar" style="${!hasImages ? 'border: none;' : ''}">
+                <div class="comments-header" style="${!hasImages ? 'display: none;' : 'display: flex; justify-content: space-between; align-items: center;'}">
+                    ${hasImages ? `
+                        <span class="tag" style="background-color: ${deptColor};">${authorName}</span>
+                        <button class="close-btn" style="position: static; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+                    ` : ''}
                 </div>
-            <aside class="modal-comments-sidebar">
-                <div class="comments-header">
-                    <span class="tag" style="display: flex; justify-content: center; background-color: ${deptColor} !important;">
-                        ${post.department}
-                    </span>
-                </div>
-                <h2 style="color: white; padding: 20px !important;">${post.title}</h2>
-                <div class="modal-content" 
-                    id="content-${post.id}" 
-                    data-full-content="${post.content.replace(/"/g, '&quot;')}" 
-                    onclick="this.innerHTML = this.getAttribute('data-full-content'); this.style.cursor='default';"
-                    style="padding: 0 20px 15px 20px; cursor: pointer;">${window.checkStringLength(post.content, 100)}</div>                
-                <div id="modal-comments-list" class="comments-scroll-area"></div>
-                <div class="comment-input-area">
-                    <input type="text" id="new-comment-input" placeholder="Add a comment...">
-                    <button class="send-comment-btn" onclick="submitComment(event, ${post.id})">
-                        <svg viewBox="0 0 24 24" class="send-icon"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
-                    </button>
-                </div>
+
+                ${isNotice
+            ? `<h2 style="color: white; padding: 20px 20px 10px 20px !important; margin: 0;">${title}</h2>`
+            : (title ? `<h2 style="color: white; padding: 10px 20px 10px 20px !important; margin: 0;">${title}</h2>` : '')
+        }
+
+                ${hasImages ? `
+                    <div class="modal-content"; color: #ddd;">${content}</div>` : ''}
+                
+                ${!isNotice ? `
+                    <div id="modal-comments-list" class="comments-scroll-area"></div>
+                    <div class="comment-input-area">
+                        <input type="text" id="new-comment-input" placeholder="Add a comment...">
+                        <button class="send-comment-btn" onclick="window.submitComment(event, '${post.id}')">
+                            <svg viewBox="0 0 24 24" class="send-icon"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                        </button>
+                    </div>
+                ` : `
+                    <div class="comments-scroll-area" style="display: flex; align-items: center; justify-content: center; text-align: center; opacity: 0.6; padding: 20px;">
+                        <p>Comments are disabled for official announcements.</p>
+                    </div>
+                `}
             </aside>
         </div>
     `;
@@ -51,23 +145,24 @@ window.openPostModal = async function(post, images) {
 
     document.body.appendChild(overlay);
 
-    // Add this after you render the modal
-    const input = document.getElementById('new-comment-input');
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && input.value.trim() !== '') {
-            submitComment(null, post.id);
-        }
-    });
-    
-    // Ensure these functions are also global
-    if (typeof loadModalComments === 'function') loadModalComments(post.id);
+    // Only attach comment listeners if it's NOT a notice
+    if (!isNotice) {
+        const input = document.getElementById('new-comment-input');
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && input.value.trim() !== '') {
+                window.submitComment(null, post.id);
+            }
+        });
+
+        if (typeof window.loadModalComments === 'function') window.loadModalComments(post.id);
+    }
 };
 
 
 ///////////////////////////////////
 
 
-window.openFullImage = function(url) {
+window.openFullImage = function (url) {
     const fullView = document.createElement('div');
     fullView.className = 'full-image-overlay';
     fullView.innerHTML = `
@@ -82,7 +177,7 @@ window.openFullImage = function(url) {
 
 //////////////////////////
 
-window.formatTimeAgo = function(date) {
+window.formatTimeAgo = function (date) {
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
     if (diffInSeconds < 60) return 'Just now';
@@ -93,7 +188,7 @@ window.formatTimeAgo = function(date) {
 
 ////////////////////////
 
-window.loadModalComments = async function(postId) {
+window.loadModalComments = async function (postId) {
     const container = document.getElementById('modal-comments-list');
     if (!container) return; // Exit if the modal isn't open anymore
 
@@ -119,7 +214,7 @@ window.loadModalComments = async function(postId) {
 
     container.innerHTML = data.map(comment => `
         <div class="comment-item" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
-            <strong style="color: var(--accent-primary); font-size: 0.85rem;">
+            <strong style="color: white; font-size: 0.85rem;">
                 ${comment.profiles?.full_name || 'Student'}
             </strong>
             <p style="margin: 2px 0; color: white; font-size: 0.8rem;">${comment.content}</p>
@@ -134,18 +229,22 @@ window.loadModalComments = async function(postId) {
 
 ///////////////////////////
 
-window.submitComment = async function(event, postId) {
+window.submitComment = async function (event, postId) {
     if (event) event.preventDefault();
     const input = document.getElementById('new-comment-input');
     const content = input.value.trim();
     if (!content) return;
 
-    const { data: { user } } = await window.supabaseClient.auth.getUser();
-    if (!user) return alert("Log in to comment");
+    const user = window.currentUser
+    if (!user) return window.openAlert('warning', "login to comment")
 
     const { error } = await window.supabaseClient
         .from('post_comments')
-        .insert({ post_id: postId, user_id: user.id, content: content });
+        .insert({
+            post_id: postId,
+            user_id: user.id,
+            content: content
+        });
 
     if (!error) {
         input.value = '';
@@ -159,28 +258,30 @@ window.submitComment = async function(event, postId) {
 
 /////////////////////////////
 
-window.checkStringLength = function(string, length) {
+window.checkStringLength = function (string, length) {
     // 1. Convert string to an array of actual characters
-    const characters = [...string]; 
+    const characters = [...string];
 
     if (characters.length >= length) {
         // 2. Slice the array, then join it back into a string
         const truncated = characters.slice(0, length).join('');
-        
+
         return `${truncated}... <p style='color: var(--text-main)'><strong>Read more...</strong></p>`;
     }
-    
+
     return string;
 };
 
-window.showFullContent = function(postId) {
+window.showFullContent = function (postId) {
     // Instead of passing the whole string, we'll find the element
     const element = document.getElementById(`content-${postId}`);
-    
-    // We can use a global variable to store the original content temporarily 
-    // or just use a data attribute if you want to be fancy.
-    // For now, let's assume you want to expand it based on the post data.
-    
+
+    // Use global variable to store the original content temporarily because why not
+    // or use a data attribute kung gusto sosyal
+    // assume expand based on the post data
+    // this function is bery much broken
+    // for now
+
     // Since this function is called from the UI, it's easier to just 
     // toggle a 'collapsed' class or use a data attribute.
     if (element.innerHTML.includes('Read more...')) {
@@ -189,3 +290,741 @@ window.showFullContent = function(postId) {
         element.innerHTML = element.getAttribute('data-full-content');
     }
 };
+
+window.createPostOverlay = function () {
+    const overlay = document.createElement('div');
+    overlay.className = 'post-modal-overlay';
+
+    overlay.innerHTML = `
+        <div class="post-modal-card vertical-layout" style="padding: 30px; max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: var(--accent-primary);">Create New Post</h3>
+                <button class="close-btn" style="position: static; font-size: 1.5rem;">&times;</button>
+            </div>
+
+            <div class="input-group">
+                <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">WHAT'S ON YOUR MIND?</label>
+                <textarea id="new-post-content" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Write something..."></textarea>
+            </div>
+
+            <div class="upload-section" style="margin-top: 20px;">
+                <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 10px;">
+                    ATTACH IMAGES (MAX 5)
+                </label>
+                <input type="file" id="post-image-input" accept="image/*" multiple style="display: none;">
+                <button id="post-image-visual"; onclick="document.getElementById('post-image-input').click()" 
+                        style="background: var(--input-bg); border: 1px dashed var(--border-color); color: var(--text-main); padding: 10px; width: 100%; border-radius: 8px; cursor: pointer;">
+                    + Select Images
+                </button>
+                <div id="image-preview-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px;"></div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn-primary" id="submit-post-btn" style="flex: 1; font-weight: 600">POST</button>
+            </div>
+        </div>
+    `;
+
+    overlay.onclick = (e) => {
+        if (e.target === overlay || e.target.classList.contains('close-btn')) overlay.remove();
+    };
+
+    document.body.appendChild(overlay);
+
+    const imageInput = document.getElementById('post-image-input');
+    const previewGrid = document.getElementById('image-preview-grid');
+    let selectedFiles = [];
+
+    // Handle Image Selection and Preview
+    imageInput.onchange = (e) => {
+        const files = Array.from(e.target.files);
+
+        // Ensure total does not exceed 5
+        if (selectedFiles.length + files.length > 5) {
+            window.openAlert('caution',"You can only upload a maximum of 5 images.");
+            return;
+        }
+
+        files.forEach(file => {
+            selectedFiles.push(file);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.style.position = 'relative';
+                imgContainer.innerHTML = `
+                    <img src="${event.target.result}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;">
+                    <div class="remove-img" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;">&times;</div>
+                `;
+
+                imgContainer.querySelector('.remove-img').onclick = () => {
+                    selectedFiles = selectedFiles.filter(f => f !== file);
+                    imgContainer.remove();
+                };
+
+                previewGrid.appendChild(imgContainer);
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    // Handle Submit
+    document.getElementById('submit-post-btn').onclick = async () => {
+        const content = document.getElementById('new-post-content').value.trim();
+        if (content || selectedFiles.length > 0) {
+            // Updated to handle both content and images
+            window.handlePostSubmission(content, selectedFiles);
+            overlay.remove();
+        }
+    };
+};
+
+window.handlePostSubmission = async function (content, selectedFiles = []) {
+    const user = window.currentUser;
+    if (!user) {
+        window.openAlert('warning', "Please log in to post.");
+        return;
+    }
+
+    try {
+        console.log("Starting upload...");
+
+        const imageUrls = [];
+
+        // Upload all selected images (Max 5)
+        for (const file of selectedFiles) {
+            const compressedBlob = await compressImage(file, { quality: 0.7 });
+            const url = await uploadPostImage(compressedBlob, file.name);
+            imageUrls.push(url);
+        }
+
+        const postData = {
+            content: content,
+            author_id: user.id,
+            image_1: imageUrls[0] || null,
+            image_2: imageUrls[1] || null,
+            image_3: imageUrls[2] || null,
+            image_4: imageUrls[3] || null,
+            image_5: imageUrls[4] || null
+        };
+
+        const { error } = await window.supabaseClient
+            .from('user_posts')
+            .insert([postData]);
+
+        if (error) throw error;
+
+        window.openAlert('success',"Posted successfully!");
+        // Refresh feed if function exists
+        if (typeof window.renderSocialFeed === 'function') window.renderSocialFeed();
+
+    } catch (err) {
+        console.error("Submission failed:", err.message);
+        window.openAlert('caution', ("Error: " + err.message, '\n Please try again.'));
+    }
+};
+
+// 1. Extracted Compression Logic
+async function compressImage(file, { quality = 0.6, maxWidth = 1200 }) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = (maxWidth / width) * height;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, 'image/jpeg', quality);
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+
+function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g,
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag])
+    );
+}
+
+// 2. Extracted Supabase Storage Logic
+async function uploadPostImage(blob, fileName) {
+    const bucket = 'images'; // Ensure this matches your Supabase bucket name
+    const filePath = `social/${Date.now()}_${fileName.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+
+    const { data: buckets, error: bucketError } = await window.supabaseClient.storage.listBuckets();
+    console.log("Available buckets:", buckets);
+    if (bucketError) console.error("Bucket fetch error:", bucketError);
+
+    const { data, error } = await window.supabaseClient.storage
+        .from(bucket)
+        .upload(filePath, blob, {
+            contentType: 'image/jpeg',
+            upsert: false
+        });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = window.supabaseClient.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+    return publicUrl;
+}
+
+function renderMemberTags(members, container) {
+    container.innerHTML = members.map(m => `
+        <span class="tag" style="background: var(--accent-primary); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: white; display: flex; align-items: center; gap: 5px;">
+            ${m.name}
+            <b style="cursor: pointer;" class="remove-member-btn" data-id="${m.id}">&times;</b>
+        </span>
+    `).join('');
+}
+
+window.hasChats = async function (user) {
+    const { data, error } = await window.supabaseClient
+        .from('chat_room_member')
+        .select('member_id')
+        .eq('member_id', user.id)
+
+    if (data.length <= 0) {
+        console.log('no chats found for user!')
+        console.log(data);
+        return false;
+    } else {
+        console.log('chats found for user!')
+        return true;
+    }
+}
+
+window.doesUserExist = async function (searchQuery) {
+    const user = window.currentUser;
+    if (!user) return [];
+
+    const { data, error } = await window.supabaseClient
+        .from('profiles')
+        .select('id, full_name, profile_picture') // Select ID so you can add them to a chat
+        .ilike('full_name', `%${searchQuery}%`) // Finds matches anywhere in the name
+        .neq('id', user.id) // dont search yourself 
+        .limit(10);
+
+    if (error) {
+        console.error("Search error:", error.message);
+        return [];
+    }
+
+    console.log(data);
+    return data;
+};
+
+function formatDisplayTime(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+
+    const isToday =
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear();
+
+    if (isToday) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
+
+window.cachedChatList = null;
+
+window.renderChatList = async function (user) {
+    const listContainer = document.getElementById('chat-previews-list');
+    if (!listContainer) return;
+
+    const drawListHTML = (rooms) => {
+        if (!rooms || rooms.length === 0) {
+            listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8;">No chats yet</div>';
+            return;
+        }
+
+        listContainer.innerHTML = rooms.map(room => {
+            const initial = room.room_name.charAt(0).toUpperCase();
+            const displayTime = formatDisplayTime(room.last_message_time);
+            let safeText = room.last_message_text ? room.last_message_text.replace(/[&<>'"]/g,
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag])
+            ) : 'No messages yet';
+
+            if (safeText.length > 30) safeText = safeText.substring(0, 30) + '...';
+            const safeRoomName = room.room_name.replace(/'/g, "\\'");
+
+            return `
+                <div class="chat-preview" onclick="window.loadConversation('${room.room_id}', '${safeRoomName}', this)">
+                    <div class="profile-avatar">${initial}</div>
+                    <div class="chat-info">
+                        <div class="chat-name-row">
+                            <span class="chat-name">${room.room_name}</span>
+                            <span class="chat-time" style="font-size: 0.75rem; color: var(--text-muted);">${displayTime}</span>
+                        </div>
+                        <div class="chat-last-msg-row">
+                            <span class="chat-last-msg" id="last-msg-${room.room_id}" style="font-size: 0.85rem; color: var(--text-muted);">${safeText}</span>
+                            <span class="unread-badge" style="display: none;">0</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    };
+
+    if (window.cachedChatList) {
+        drawListHTML(window.cachedChatList);
+    } else {
+        listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8;">Loading chats...</div>';
+    }
+
+    const { data: rooms, error } = await window.supabaseClient
+        .from('user_chat_list')
+        .select('*')
+        .eq('member_id', user.id)
+        .order('last_message_time', { ascending: false, nullsFirst: false });
+
+    if (error) {
+        console.error("Error fetching chat list:", error);
+        if (!window.cachedChatList) {
+            listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #ef4444;">Failed to load chats</div>';
+        }
+        return;
+    }
+
+    console.log(window.cachedChatList);
+
+
+    // 4 Only redraw the UI if the new data is actually different from the cache
+    if (JSON.stringify(window.cachedChatList) !== JSON.stringify(rooms)) {
+        window.cachedChatList = rooms; // Update cache
+        drawListHTML(rooms);           // Redraw UI silently
+    }
+}
+
+async function renderMessages(messages, currentUserId, currentName) {
+    const container = document.querySelector('.messages-wrapper');
+    if (!container) return;
+
+    console.log(currentName)
+
+    if (!messages || messages.length === 0) {
+        container.innerHTML = `<div style="display: flex; height: 100%; align-items: center; justify-content: center; color: #94a3b8;">No messages yet. Say hi!</div>`;
+        return;
+    }
+
+    container.innerHTML = messages.map(msg => {
+        const isMe = msg.author_id === currentUserId;
+        const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        return `
+            <div class="message-bubble-wrapper ${isMe ? 'is-me' : ''}">
+                <span class="chat-username">${msg.profiles?.full_name || ''}</span>
+                <div class="message-bubble">
+                    ${msg.text}
+                </div>
+                <div class="message-meta">
+                    ${time} ${isMe ? '✓' : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    setTimeout(() => container.scrollTop = container.scrollHeight, 10);
+}
+
+function appendSingleMessage(msg, currentUserId) {
+    const container = document.querySelector('.messages-wrapper');
+    if (!container) return;
+
+    if (container.innerHTML.includes('No messages yet')) container.innerHTML = '';
+
+    const isMe = msg.author_id === currentUserId;
+    const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const safeText = escapeHTML(msg.text)
+    const msgHTML = `
+        <div class="message-bubble-wrapper ${isMe ? 'is-me' : ''}">
+            <span class="chat-username">${msg?.profiles.full_name || ''}</span>
+            <div class="message-bubble">
+                ${safeText}
+            </div>
+            <div class="message-meta">
+                ${time} ${isMe ? '✓' : ''}
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', msgHTML);
+    setTimeout(() => container.scrollTop = container.scrollHeight, 10);
+}
+
+window.showCreateChatUI = function () {
+    const container = document.querySelector('.messages-wrapper');
+    if (!container) return;
+
+    // Disable chat input while creating room
+    const chatInput = document.getElementById('chat-message-input');
+    if (chatInput) chatInput.disabled = true;
+
+    container.innerHTML = `
+        <div class="create-chat-room-form" style="padding: 40px; margin: 0 auto; width: 100%;">
+            <h3 style="color: var(--text-main); margin-bottom: 24px; font-size: 1.5rem;">Start a New Chat</h3>
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label style="display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">Chatroom Name</label>
+                <input type="text" class="global-input" id="new-room-name" placeholder="e.g. Project Group" 
+                       style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.02); color: var(--text-main); border-radius: 8px; outline: none;">
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px; position: relative;">
+                <label style="display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">Add Members</label>
+                <input class="global-input" type="text" id="room-members-input" placeholder="Search students..." autocomplete="off"
+                       style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.02); color: var(--text-main); border-radius: 8px; outline: none;">
+                
+                <div id="search-results-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-color); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; z-index: 10; max-height: 200px; overflow-y: auto; margin-top: 5px; box-shadow: var(--shadow-soft);"></div>
+                
+                <div id="selected-members-tags" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;"></div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 32px; display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" id="is-public-room" style="width: 18px; height: 18px; cursor: pointer;">
+                <label for="is-public-room" style="color: var(--text-muted); font-size: 0.875rem;">Public Room? <span style="font-size: 0.75rem; opacity: 0.8;">(Anyone can search and join)</span></label>
+            </div>
+
+            <button id="confirm-create-room" class="btn-primary" 
+                    style="width: 100%; padding: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; background: var(--accent-primary); color: var(--inverted-text-color); border: none;">
+                CREATE CHATROOM
+            </button>
+        </div>
+    `;
+
+    // Re-attach listeners for the new elements
+    const roomMembers = document.getElementById('room-members-input');
+    const resultsDropdown = document.getElementById('search-results-dropdown');
+    const tagsContainer = document.getElementById('selected-members-tags');
+    let selectedMembers = [];
+
+    tagsContainer.onclick = (e) => {
+        if (e.target.classList.contains('remove-member-btn')) {
+            const id = e.target.getAttribute('data-id');
+            selectedMembers = selectedMembers.filter(m => m.id !== id);
+            renderMemberTags(selectedMembers, tagsContainer);
+        }
+    };
+
+    roomMembers.addEventListener('input', async function (e) {
+        const query = e.target.value.trim();
+        if (query.length < 3) {
+            resultsDropdown.style.display = 'none';
+            return;
+        }
+
+        const users = await window.doesUserExist(query);
+        if (users && users.length > 0) {
+            resultsDropdown.innerHTML = users.map(student => `
+                <div class="search-result-item" 
+                    data-id="${student.id}" 
+                    data-name="${student.full_name}"
+                    style="padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px;">
+                    <div style="background: var(--accent-primary); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--inverted-text-color);">
+                        ${student.full_name.substring(0, 1)}
+                    </div>
+                    <span style="color: var(--text-main); font-size: 14px;">${student.full_name}</span>
+                </div>
+            `).join('');
+            resultsDropdown.style.display = 'block';
+
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.onclick = () => {
+                    const id = item.getAttribute('data-id');
+                    const name = item.getAttribute('data-name');
+                    if (!selectedMembers.some(m => m.id === id)) {
+                        selectedMembers.push({ id, name });
+                        renderMemberTags(selectedMembers, tagsContainer);
+                    }
+                    roomMembers.value = '';
+                    resultsDropdown.style.display = 'none';
+                };
+            });
+        } else {
+            resultsDropdown.innerHTML = `<p style="color: var(--text-muted); padding: 12px; font-size: 12px;">No students found...</p>`;
+            resultsDropdown.style.display = 'block';
+        }
+    });
+
+    const confirmBtn = document.getElementById('confirm-create-room');
+    if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+            const name = document.getElementById('new-room-name').value.trim();
+            const isPublic = document.getElementById('is-public-room').checked;
+            if (!name) return alert('Please enter a room name');
+
+
+            const user = window.currentUser;
+            if (!user) return alert("please login")
+
+            try {
+                const { data: room, error: roomError } = await window.supabaseClient
+                    .from('chat_room')
+                    .insert([{ name: name, is_public: isPublic }])
+                    .select()
+                    .single();
+                if (roomError) throw roomError;
+
+                const membershipRows = [{
+                    chat_room_id: room.id,
+                    member_id: user.id
+                },
+                ...selectedMembers.map(m => ({
+                    chat_room_id: room.id,
+                    member_id: m.id
+                }))
+                ];
+
+                const { error: memberError } = await window.supabaseClient
+                    .from('chat_room_member')
+                    .insert(membershipRows);
+
+                if (memberError) throw memberError;
+
+                window.openAlert('success', (`Group "${name}" created successfully!`));
+                await window.renderChatList(user);
+                window.loadConversation(room.id, name);
+            } catch (err) {
+                console.error("Creation failed:", err.message);
+                window.openAlert('warning', ("Error: " + err.message));
+            }
+        };
+    }
+}
+
+window.openChat = async function (e) {
+    let user = window.currentUser
+
+    if (!user) {
+        const { data } = await window.supabaseClient.auth.getUser();
+        if (!data?.user) return alert("Log in to chat");
+
+        user = data.user;
+
+        window.currentUser = user;
+        window.currentUserId = user.id
+    }
+
+
+    window.currentUser = user;
+    window.currentUserId = user.id;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'post-modal-overlay';
+
+    overlay.innerHTML = `
+        <div class="post-modal-card chat" style="min-width: 95vw; min-height:95vh; max-width: 95vw;">
+            <!-- Left Navigation Sidebar - Simplified -->
+
+            <!-- Middle Chat List Sidebar -->
+            <aside class="left-sidebar-chat">
+                <div class="chat-list-header">
+                    <h2>My Chats <button class="create-chat-btn" id="open-create-chat">+</button></h2>
+                    <div class="search-container">
+                        <input type="text" id="chat-search-input" placeholder="Search chats...">
+                    </div>
+                </div>
+                
+                <div class="chat-tabs">
+                    <div class="chat-tab active">All Messages</div>
+                    <div class="chat-tab">Unread</div>
+                </div>
+
+                <div class="chat-previews" id="chat-previews-list">
+                    <!-- Loaded via JS -->
+                </div>
+            </aside>
+
+            <!-- Main Chat Area -->
+            <div class="main-chats-container">
+                <div class="chat-header">
+                    <div class="chat-header-user">
+                        <div id="active-chat-avatar" style="width: 40px; height: 40px; background: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--inverted-text-color); position: relative;">
+                            ?
+                            <div class="status-dot"></div>
+                        </div>
+                        <div>
+                            <div id="active-chat-name" style="font-weight: 700; color: var(--text-main);">Select a chat</div>
+                            <div id="active-chat-status" style="font-size: 0.75rem; color: var(--text-muted);"></div>
+                        </div>
+                    </div>
+                    <div class="chat-header-actions">
+                        <button class="info-btn" id="info-btn" style="position: static; font-size: 1.5rem;">...</button>
+                        <button class="close-btn" style="position: static; font-size: 1.5rem;">&times;</button>
+                    </div>
+                </div>
+
+                <div class="messages-wrapper">
+                    <div style="display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); gap: 16px;">
+                        <span style="font-size: 3rem; opacity: 0.2;">💬</span>
+                        <span>Select a conversation to start chatting</span>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="chat-message-input" placeholder="Type a message..." disabled>
+                        <button style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--accent-primary);" id="send-chat-btn">➔</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    overlay.onclick = (e) => {
+        if (e.target === overlay || e.target.classList.contains('close-btn')) overlay.remove();
+    };
+
+    // Listeners
+    document.getElementById('open-create-chat').onclick = () => window.showCreateChatUI();
+    document.getElementById('info-btn').onclick
+
+    const chatInput = document.getElementById('chat-message-input');
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && chatInput.value.trim() !== '' && window.currentChatRoomId) {
+            submitChatMessage(chatInput.value, window.currentChatRoomId);
+            chatInput.value = '';
+        }
+    });
+
+    document.getElementById('send-chat-btn').onclick = () => {
+        if (chatInput.value.trim() !== '' && window.currentChatRoomId) {
+            submitChatMessage(chatInput.value, window.currentChatRoomId);
+            chatInput.value = '';
+        }
+    };
+
+    // Initial Load
+    window.renderChatList(user);
+}
+
+window.loadConversation = async function (roomId, roomName, element) {
+    document.querySelectorAll('.chat-preview').forEach(el => el.classList.remove('active'));
+    if (element) element.classList.add('active');
+
+    const chatInput = document.getElementById('chat-message-input');
+    if (chatInput) {
+        chatInput.disabled = false;
+        chatInput.placeholder = "Type a message...";
+        chatInput.focus();
+    }
+
+    window.currentChatRoomId = roomId;
+
+    if (roomName) {
+        console.log(roomName);
+        document.getElementById('active-chat-name').textContent = roomName;
+        document.getElementById('active-chat-avatar').textContent = roomName.charAt(0).toUpperCase();
+    }
+
+    const container = document.querySelector('.messages-wrapper');
+    container.innerHTML = `<div style="display: flex; height: 100%; align-items: center; justify-content: center; color: #94a3b8;">Loading messages...</div>`;
+
+    const { data, error } = await window.supabaseClient
+        .from('message')
+        .select(`
+            id,
+            text,
+            created_at,
+            author_id,
+            profiles(full_name)`)
+        .eq('chat_room_id', roomId)
+        .order('created_at', { ascending: true });
+
+    if (error) {
+        console.error('Er loading messages', error);
+        container.innerHTML = `<div style="display: flex; height: 100%; align-items: center; justify-content: center; color: #ef4444;">Failed to load messages</div>`;
+        return;
+    }
+
+    renderMessages(data, window.currentUserId, window.currentUser);
+    if (typeof subscribeToRoom === 'function') subscribeToRoom(roomId, window.currentUserId);
+};
+
+async function submitChatMessage(text, roomId) {
+    if (!text.trim()) return;
+
+    const user = window.currentUser;
+    if (!user) return alert("Log in to chat!");
+
+    const tempId = window.crypto.randomUUID();
+
+    const newMsg = {
+        id: tempId,
+        text: text.trim(),
+        author_id: user.id,
+        created_at: new Date().toISOString(),
+        profiles: { full_name: user.user_metadata?.full_name || 'You' }
+    }
+
+    appendSingleMessage(newMsg, user.id);
+
+    if (window.chatChannel) {
+        window.chatChannel.send({
+            type: 'broadcast',
+            event: 'new_message',
+            payload: newMsg
+        });
+    }
+
+    window.supabaseClient
+        .from('message')
+        .insert({
+            id: tempId,
+            chat_room_id: roomId,
+            author_id: user.id,
+            text: text.trim()
+        }).then(({ error }) => {
+            if (error) console.error("Failed to save message: ", error);
+        });
+}
+
+window.renderedMessagesIds = new Set();
+
+function subscribeToRoom(roomId, currentUserId) {
+    if (window.chatChannel) window.supabaseClient.removeChannel(window.chatChannel);
+
+    window.chatChannel = window.supabaseClient
+        .channel(`room-${roomId}`)
+        .on('broadcast', { event: 'new_message' }, (payload) => {
+            const newMessage = payload.payload
+
+            if (!window.renderedMessagesIds.has(newMessage.id)) {
+                window.renderedMessagesIds.add(newMessage.id);
+                appendSingleMessage(newMessage, currentUserId);
+            }
+        })
+        .subscribe();
+}

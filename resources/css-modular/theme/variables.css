@@ -1,0 +1,66 @@
+:root {
+    /* Transitions */
+    --transition-speed: 0.3s;
+    
+    /* Core Layout Variables */
+    --bg-color: #f8f9fc;
+    --text-main: #1a1a1a;
+    --text-muted: #64748b;
+    --card-bg: #ffffff;
+    --accent-primary: #007a0a;
+    --accent-secondary: #ec4899;
+    --shadow-soft: 0 8px 24px rgba(0,0,0,0.05);
+    --shadow-hover: 0 12px 32px rgba(0, 122, 10, 0.1);
+    --border-color: #e2e8f0;
+    --input-bg: #f1f5f9;
+    
+    /* Legacy / Extended Variables from variables.css */
+    --support-tab-color: #424242;
+    --transparent-bg-color: #ffffff63;
+    --inverted-text-color: #ffffff;
+    --invert-card-bg: #1a1a1a;
+
+    /* Framework-like Variables from theme.css */
+    --card: #f7f8f8;
+    --ring: #1ef128;
+    --input: #f7f9fa;
+    --muted: #E5E5E6;
+    --accent: #E3ECF6;
+    --border: #e1eaef;
+    --radius: 1.3rem;
+    --chart-1: #1e9df1;
+    --chart-2: #00b87a;
+    --chart-3: #f7b928;
+    --chart-4: #17bf63;
+    --chart-5: #e0245e;
+    --popover: #ffffff;
+    --primary: #1ef128;
+    --sidebar: #f7f8f8;
+    --font-mono: Menlo, monospace;
+    --font-sans: 'Inter', 'Open Sans', sans-serif;
+    --secondary: #0f1419;
+    --background: #ffffff;
+    --font-serif: Georgia, serif;
+    --foreground: #0f1419;
+    --destructive: #f4212e;
+    --shadow-blur: 0px;
+    --shadow-color: rgba(29,161,242,0.15);
+    --sidebar-ring: #1da1f2;
+    --shadow-spread: 0px;
+    --shadow-opacity: 0;
+    --sidebar-accent: #E3ECF6;
+    --sidebar-border: #e1e8ed;
+    --card-foreground: #0f1419;
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 2px;
+    --sidebar-primary: #1e9df1;
+    --muted-foreground: #0f1419;
+    --accent-foreground: #1e9df1;
+    --popover-foreground: #0f1419;
+    --primary-foreground: #ffffff;
+    --sidebar-foreground: #0f1419;
+    --secondary-foreground: #ffffff;
+    --destructive-foreground: #ffffff;
+    --sidebar-accent-foreground: #1e9df1;
+    --sidebar-primary-foreground: #ffffff;
+}

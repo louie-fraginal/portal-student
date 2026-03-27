@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCBA.Life | Department</title>
+    <title>NCBA.Life | Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/department.css">
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="../css-modular/components/modals.css">
 </head>
+
 <body>
-    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;"></div>
-    <div class="noise-bg"></div>
-    <div class="contact">
-        Cubao Campus 8913-8785 • Taytay Campus 8286-2928 • Fairview Campus 8442-6956
+    <div id="toast-container"
+        style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;">
     </div>
+    <div class="noise-bg"></div>
 
     <nav>
         <div class="logo">NCBA.LIFE</div>
         <div style="font-weight: 600; font-size: 0.9rem;">
-            <a href="../html/social-v2.html" style="text-decoration: none; color: inherit;">← Back to Social</a>
+            <a href="social-v2.html" style="text-decoration: none; color: inherit;">← Back to Social</a>
         </div>
         <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
             <span class="icon-sun">☀️</span>
@@ -28,33 +30,36 @@
     </nav>
 
     <main style="grid-template-areas: none; display: grid;">
-        <header class="dept-header bento-card" id="dept-header">
-            <div class="dept-header-content">
-                <span class="dept-badge" id="dept-badge">Department</span>
-                <span class="dept-badge dept-link" id="dept-link">Facebook</span>
-                <h1 id="dept-name">Department Name</h1>
-                <p class="dept-intro" id="dept-intro">Loading introduction...</p>
+        <header class="profile-header bento-card" id="profile-header">
+            <div class="profile-header-content">
+                <div class="profile-avatar" id="profile-avatar">U</div>
+                <div>
+                    <span class="profile-badge" id="profile-role">Student</span>
+                    <h1 id="profile-name">Loading.....</h1>
+                    <p class="profile-intro" id="profile-dept">...</p>
+                </div>
             </div>
         </header>
 
         <section class="posts-grid" id="posts-grid">
-            <h2>Loading...</h2>
             <!-- Posts will be loaded here -->
         </section>
     </main>
 
-    
     <div class="footer">
         <p class="tag" style="background-color: #98ffb3 !important; color: black">Computer Programming 2 • Group 1</p>
         <p class="tag" style="background-color: black; color: #98ffb3">NCBA.LIFE © 2026 • All rights reserved.</p>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../javascript/localhost.js"></script>
-    <script src="../javascript/ui-util.js"></script>
-    <script src="../javascript/department.js"></script>
-    <script src="../javascript/darkmode.js"></script>
     <script src="../javascript/index.js"></script>
+    <script src="../javascript/ui-util.js"></script>
+    <script src="../javascript/profile.js"></script>
+    <script src="../javascript/darkmode.js"></script>
+    <script>
+        window.checkAuth();
+    </script>
 </body>
+
 </html>
