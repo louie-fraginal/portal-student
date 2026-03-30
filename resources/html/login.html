@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NCBA.Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css-modular/main.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -14,24 +16,7 @@
     <link rel="manifest" href="/site.webmanifest">
 </head>
 
-<!-- <div class="login-main">
-    <div class="noise-bg"></div>
-
-    <div class="main-login">
-        <div class="login-area">
-            <h2 style="display: flex; justify-content: center; position: relative; margin-bottom: 25px;">NCBA.LIFE</h2>
-            <h4 >User ID</h4>
-            <input type="textbox" class="text-input" id="user_id">
-            <h4>Password</h4>
-            <input type="password" class="text-input" id="user_password">
-            <button type="button" class="form-button" id="login-button"><h2 style=" display: flex; justify-content: center; text-align: center;">Log in</h2></button>      
-        </div>
-    </div>
-</div> -->
-
 <body>
-
-    <div class="noise-bg"></div>
     <div class="split-card">
         <div class="login-side" id="auth-container">
             <div id="auth-content">
@@ -52,10 +37,10 @@
                     </div>
 
                     <div class="form-actions">
-                        <!-- <label class="remember-me">
-                            <input type="checkbox"> Remember for 30 days
-                        </label> -->
-                        <a href="#" class="forgot-link">Forgot password?</a>
+                        <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
+                            <span class="icon-sun">☀️</span>
+                            <span class="icon-moon">🌙</span>
+                        </button>
                     </div>
 
                     <button type="submit" id="login-button" class="btn-primary">Log in</button>
@@ -92,3 +77,4 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../javascript/localhost.js"></script>
 <script src="../javascript/login.js"></script>
+<script src="../javascript/darkmode.js"></script>

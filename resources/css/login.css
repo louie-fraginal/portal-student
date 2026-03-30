@@ -1,9 +1,11 @@
-/* --- Base Reset & Typography --- */
+/* resources/css/login.css */
+/* Refactored to fit with variables.css and social-v2 theme */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
@@ -12,41 +14,14 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
-/* --- Your Existing Background --- */
+/* --- Simplified Background --- */
 .noise-bg {
-    background: url('https://grainy-gradients.vercel.app/noise.svg');
-    position: fixed;
-    top: 0; 
-    left: 0;
-    width: 100vw; 
-    height: 100vh;
-    z-index: 2;
-    background-color: #ffe3c6;
-    overflow: hidden; 
-    pointer-events: none;
-    backface-visibility: hidden;
-    transform: translateZ(0);
-}
-
-.noise-bg::after {
-    content: "";
-    position: absolute;
-    top: -50%; left: -50%;
-    width: 200%; height: 200%;
-    background-image: 
-        radial-gradient(at 0% 0%, rgba(211, 226, 109, 0.843) 0%, transparent 30%),
-        radial-gradient(at 25% 10%, rgba(245, 158, 11, 0.8) 0%, transparent 30%),
-        radial-gradient(at 50% 50%, rgba(219, 39, 120, 0.523) 0%, transparent 30%);
-    background-size: 200% 200%;
-    animation: drift-optimized 3s ease-in-out infinite alternate;
-    will-change: transform; 
-}
-
-@keyframes drift-optimized {
-    from { transform: translate(0, 0) rotate(0deg); }
-    to { transform: translate(10%, 5%) rotate(3deg); }
+    display: none; /* Removed in favor of themed background */
 }
 
 /* --- Split Card Layout --- */
@@ -54,38 +29,39 @@ body {
     display: flex;
     width: 95vw;
     height: 90vh;
-    border-radius: 20px;
-    box-shadow: 25px 25px 50px -12px rgba(0, 0, 0, 0.5);
-    background: transparent; /* Deep dark blue/black */
-    overflow: hidden; /* Keeps the inner corners rounded */
+    max-width: 1200px;
+    max-height: 800px;
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
     z-index: 10;
+    transition: all var(--transition-speed);
 }
 
 /* --- Left Side: Login Form --- */
 .login-side {
-    /* flex: 1; */
-    padding: 60px 80px;
+    flex: 1.2;
+    padding: 60px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: #ffffff;
-    
-    /* Dark glass effect for readability */
-    background: rgba(9, 11, 16, 0.75); 
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.05); /* Subtle divider line */
+    background: var(--card-bg);
+    border-right: 1px solid var(--border-color);
 }
 
 .login-header h2 {
-    font-size: 28px;
-    font-weight: 600;
+    font-size: 2rem;
+    font-weight: 800;
     margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
 }
 
 .login-header p {
-    color: #8A8F9E;
-    font-size: 14px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
     margin-bottom: 40px;
 }
 
@@ -95,114 +71,103 @@ body {
 
 .input-group label {
     display: block;
-    font-size: 13px;
-    color: #8A8F9E;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
     margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .input-group input {
     width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #2A2D3A;
-    padding: 10px 0;
-    color: #ffffff;
-    font-size: 15px;
+    background: var(--transparent-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text-main);
+    font-size: 1rem;
     outline: none;
-    transition: border-color 0.3s;
+    transition: all 0.3s;
 }
 
 .input-group input:focus {
-    border-bottom: 1px solid #ffffff;
-}
-
-/* --- Select Dropdown Styling --- */
-.input-group select {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #2A2D3A;
-    padding: 10px 0;
-    color: #ffffff;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.3s;
-    cursor: pointer;
-    
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238A8F9E' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: calc(100% - 5px) center;
-}
-
-.input-group select:focus {
-    border-bottom: 1px solid #ffffff;
-}
-
-.input-group select option {
-    background-color: #1C202B; 
-    color: #ffffff;
-    padding: 10px;
-}
-
-/* Fix for placeholder/first option color */
-.input-group select:invalid,
-.input-group select option[value=""] {
-    color: #8A8F9E;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 4px var(--shadow-hover);
 }
 
 .form-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
     margin-bottom: 30px;
 }
 
-.remember-me {
-    color: #8A8F9E;
+.theme-btn {
+    background: var(--transparent-bg-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: all 0.2s;
 }
 
-.forgot-link {
-    color: #E2B255; /* Warm accent color matching your background */
-    text-decoration: none;
+.theme-btn:hover {
+    border-color: var(--accent-primary);
+    background: var(--card-bg);
 }
+
+.theme-btn span {
+    font-size: 1.2rem;
+}
+
+.icon-sun { display: inline-block; }
+.icon-moon { display: none; }
+
+body.dark-mode .icon-sun { display: none; }
+body.dark-mode .icon-moon { display: inline-block; }
 
 .btn-primary {
     width: 100%;
-    padding: 14px;
-    background: #1C202B;
-    color: #ffffff;
+    padding: 16px;
+    background: var(--accent-primary);
+    color: var(--inverted-text-color);
     border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary:hover {
-    background: #2A2D3A;
-    transform: translateY(-2px) ease-in-out;
-    transition: translateY 0.8s ease-in
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    filter: brightness(1.1);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
 }
 
 .register-prompt {
     margin-top: 30px;
-    font-size: 14px;
-    color: #8A8F9E;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
 }
 
 .register-prompt a {
-    color: #E2B255;
+    color: var(--accent-primary);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+}
+
+.register-prompt a:hover {
+    text-decoration: underline;
 }
 
 /* --- Right Side: Intro & Graphics --- */
@@ -211,136 +176,69 @@ body {
     padding: 60px;
     position: relative;
     overflow: hidden;
-    color: #ffffff;
-    
-    /* Lighter glass effect to let the vibrant animated colors pop */
-    background: rgba(21, 24, 34, 0.3); 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-   /* Add these lines to center the inner text */
+    color: var(--inverted-text-color);
+    background: var(--invert-card-bg); /* Dark side by default */
     display: flex;
     flex-direction: column;
-    justify-content: center; 
-    align-items: center;  
+    justify-content: center;
+    align-items: center;
     text-align: center;
 }
 
+.intro-content {
+    position: relative;
+    z-index: 2;
+}
+
 .intro-content h1 {
-    font-size: 60px;
-    font-family: montserrat;
-    font-weight:2000;
-    text-transform: uppercase;
-    margin-bottom: 50px;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -0.03em;
 }
 
-.intro-content p{
-    color: #ffffff;
-    font-size: 15px;
+.intro-content p {
+    font-size: 1rem;
     line-height: 1.6;
-    max-width: 100%;
-    text-shadow: 1px 1px #1C202B;
+    opacity: 0.8;
 }
 
-/* Placeholder for the dashboard mockups to recreate the image's vibe */
+/* Decorative elements */
 .dashboard-preview {
-    filter: blur(2px);
     position: absolute;
-    top: 50%;
+    bottom: -100px;
     left: 10%;
     width: 120%;
-    height: 100%;
-    transform: rotate(-5deg) translateY(0px); /* Creates that angled look */
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    height: 300px;
+    transform: rotate(-5deg);
+    display: flex;
     gap: 20px;
-    opacity: 0.8;
-    z-index: -1
+    opacity: 0.15;
+    pointer-events: none;
 }
 
 .mock-card {
-    margin-top: 100px;
-    background: #1C202B;
-    border-radius: 12px;
-    height: 200px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border: 1px solid #2A2D3A;
-}
-
-/* --- Transition Animation --- */
-#auth-content {
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.fade-out {
-    opacity: 0;
-    transform: translateY(10px); /* Subtle slide down effect */
-}
-
-.footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    grid-area: footer;
-    max-height: 100px;
-    background-color: rgba(145, 145, 145, 0.158);
-    display: flex;
-    justify-content: center;
-    line-height: 2;
-    padding: 20px 20px 20px 20px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-.tag {
-    background: var(--inverted-text-color);
-    color: var(--invert-card-bg);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 800;
-    font-size: 0.75rem;
-    text-transform: uppercase;
+    background: var(--accent-primary);
+    border-radius: 16px;
+    flex: 1;
+    height: 100%;
 }
 
 /* --- Responsive Adjustments --- */
 @media (max-width: 900px) {
     .split-card {
         flex-direction: column;
-        height: auto;
-        min-height: 80vh;
         width: 90vw;
-        overflow-y: auto;
+        height: auto;
+        max-height: none;
     }
     
     .intro-side {
-        display: none; /* Hide intro on smaller screens for a cleaner login experience */
+        display: none;
     }
 
     .login-side {
         padding: 40px 30px;
-        flex: 1;
-        width: 100%;
-        border-right: none;
-    }
-
-    .login-header h2 {
-        font-size: 24px;
-    }
-    
-    .intro-content h1 {
-        font-size: 40px;
-    }
-}
-
-@media (max-height: 700px) {
-    .split-card {
-        height: 95vh;
-        overflow-y: auto;
-    }
-    .login-side {
-        padding: 30px 40px;
-        justify-content: flex-start;
     }
 }

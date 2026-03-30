@@ -735,7 +735,7 @@ window.showCreateChatUI = function () {
 
             <div class="input-group" style="margin-bottom: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
                 <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)" style="display: none;">
-                <label for="imageInput" id="previewContainer" style="display: none; cursor: pointer; transition: opacity 0.3s;">
+                <label for="imageInput" id="previewContainer" style="display: block; cursor: pointer; transition: opacity 0.3s;">
                     <img id="previewImg" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid var(--accent-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                 </label>
                 <label for="imageInput" id="uploadLabel" class="btn-primary" style="display: block; width: 100%; padding: 14px; font-weight: 700; border: 2px dashed var(--accent-primary); border-radius: 12px; cursor: pointer; background: rgba(0,0,0,0.02); color: var(--accent-primary); box-sizing: border-box; transition: 0.2s; margin: 0;">
