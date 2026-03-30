@@ -176,8 +176,8 @@ body.dark-mode .icon-moon { display: inline-block; }
     padding: 60px;
     position: relative;
     overflow: hidden;
-    color: var(--inverted-text-color);
-    background: var(--invert-card-bg); /* Dark side by default */
+    color: var(--sidebar-foreground);
+    background: var(--sidebar); /* Dark side by default */
     display: flex;
     flex-direction: column;
     justify-content: center;

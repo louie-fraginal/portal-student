@@ -14,7 +14,7 @@ async function authUser(email, password) {
         }
 
         if (data.session) {
-            window.location.href = 'index.html';
+            window.location.href = 'social-v2.html';
         } else {
             
         }

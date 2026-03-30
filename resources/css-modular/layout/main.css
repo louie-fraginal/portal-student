@@ -2,7 +2,7 @@
 
 /* --- MAIN GRID --- */
 main {
-    max-width: 1400px;
+    max-width: 95vw;
     margin: 40px auto 80px auto;
     padding: 0 5%;
     display: grid;

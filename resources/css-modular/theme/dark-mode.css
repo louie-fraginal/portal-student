@@ -1,8 +1,8 @@
 body.dark-mode {
-    --bg-color: #0c0d10;
+    --bg-color: #040404;
     --text-main: #ffffff;
     --text-muted: #94a3b8;
-    --card-bg: #1d1d1d;
+    --card-bg: #101010;
     --accent-primary: #98ffb3;
     --shadow-soft: 0 8px 24px rgba(0,0,0,0.4);
     --border-color: #30363d;

@@ -1,19 +1,6 @@
 /* resources/css-modular/pages/social.css */
 
-:root {
-    --v2-bg: #050505;
-    --v2-card: #121212;
-    --v2-card-hover: #1a1a1a;
-    --v2-green: #98ffb3;
-    --v2-green-dim: rgba(152, 255, 179, 0.1);
-    --v2-text: #ffffff;
-    --v2-text-dim: #a0a0a0;
-    --v2-border: rgba(255, 255, 255, 0.08);
-    --v2-active-background: rgba(255, 255, 255, 0.087);
-}
-
 body {
-    background-color: var(--v2-bg) !important;
     color: var(--v2-text);
     font-family: 'Plus Jakarta Sans', sans-serif;
     margin: 0;
@@ -217,15 +204,6 @@ aside::-webkit-scrollbar {
     --v2-text-dim: #a0a0a0;
     --v2-border: rgba(255, 255, 255, 0.08);
     --v2-active-background: rgba(255, 255, 255, 0.087);
-}
-
-body {
-    background-color: var(--v2-bg) !important;
-    color: var(--v2-text);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    margin: 0;
-    overflow: hidden;
-    height: 100vh;
 }
 
 * {
