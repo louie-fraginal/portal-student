@@ -6,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NCBA.Life | Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/variables.css">
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="../css-modular/main.css">
+    <link rel="stylesheet" href="../css-modular/pages/profile.css">
     <link rel="stylesheet" href="../css-modular/components/modals.css">
 </head>
 
@@ -16,7 +15,6 @@
     <div id="toast-container"
         style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;">
     </div>
-    <div class="noise-bg"></div>
 
     <nav>
         <div class="logo">NCBA.LIFE</div>
@@ -32,7 +30,11 @@
     <main style="grid-template-areas: none; display: grid;">
         <header class="profile-header bento-card" id="profile-header">
             <div class="profile-header-content">
-                <div class="profile-avatar" id="profile-avatar">U</div>
+                <div class="profile-avatar" id="profile-avatar" style="cursor: pointer;" onclick="clickAvatar()">
+                    <!-- Will be dynamically loaded by profile.js-->
+                    U
+                </div>
+                <input type="file" id="fileSelect"/>
                 <div>
                     <span class="profile-badge" id="profile-role">Student</span>
                     <h1 id="profile-name">Loading.....</h1>

@@ -73,11 +73,11 @@ window.openPostModal = async function (post, images, isNotice = false) {
     const content = post.content || post.message || '';
     const title = post.title || post.header || '' // header comes from official announcements
     const authorName = (post.author_name ? post.author_name : post.department_key) // Check if post came from a user first, if not then department.
-    const deptColor = window.DEPT_MAP[post.department_key]?.color || '#ffffff';
+    const deptColor = window.DEPT_MAP[post.department_key]?.color || '#878787';
 
     console.log(post)
-    console.log(post.department)
-    console.log(window.DEPT_MAP[post.department]);
+    console.log(post.department_key)
+    console.log(window.DEPT_MAP[post.department_key]);
 
     // Filter images to see if we actually have any valid URLs
     const validImages = Array.isArray(images) ? images.filter(img => img && img !== 'null' && img !== '') : [];
@@ -90,7 +90,7 @@ window.openPostModal = async function (post, images, isNotice = false) {
         <div class="post-modal-card ${layoutClass}">
             ${!hasImages ? `
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <span class="v2-tag" style="background-color: ${deptColor}; color: #000000">${authorName}</span>
+                    <span class="tag" style="background-color: ${deptColor}; color: #000000">${authorName}</span>
                     <button class="close-btn" style="position: static; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
                 </div>
             ` : ''}
@@ -291,7 +291,8 @@ window.showFullContent = function (postId) {
     }
 };
 
-window.createPostOverlay = function () {
+window.createPostOverlay = function (type) {
+
     const overlay = document.createElement('div');
     overlay.className = 'post-modal-overlay';
 
@@ -306,6 +307,7 @@ window.createPostOverlay = function () {
                 <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">WHAT'S ON YOUR MIND?</label>
                 <textarea id="new-post-content" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Write something..."></textarea>
             </div>
+
 
             <div class="upload-section" style="margin-top: 20px;">
                 <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 10px;">
@@ -392,7 +394,7 @@ window.handlePostSubmission = async function (content, selectedFiles = []) {
 
         // Upload all selected images (Max 5)
         for (const file of selectedFiles) {
-            const compressedBlob = await compressImage(file, { quality: 0.7 });
+            const compressedBlob = window.compressImage(file, { quality: 0.7 });
             const url = await uploadPostImage(compressedBlob, file.name);
             imageUrls.push(url);
         }
@@ -424,7 +426,7 @@ window.handlePostSubmission = async function (content, selectedFiles = []) {
 };
 
 // 1. Extracted Compression Logic
-async function compressImage(file, { quality = 0.6, maxWidth = 1200 }) {
+window.compressImage =  async function compressImage(file, { quality = 0.6, maxWidth = 1200 }) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -699,7 +701,7 @@ window.previewImage = async function (event) {
         const originalFile = input.files[0];
 
         try {
-            const compressedBlob = await compressImage(originalFile, { quality: 0.7, maxWidth: 800 });
+            const compressedBlob = window.compressImage(originalFile, { quality: 0.7, maxWidth: 800 });
 
             // Save the compressed Blob, submit button can grab it later
             window.compressedChatroomPhoto = compressedBlob;

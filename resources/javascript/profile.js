@@ -36,7 +36,7 @@ async function initProfile() {
     document.getElementById('profile-name').textContent = targetProfile.full_name || 'Unknown Student';
     document.getElementById('profile-avatar').textContent = (targetProfile.full_name || 'U').charAt(0);
     document.getElementById('profile-role').textContent = targetProfile.role || 'Student';
-    document.getElementById('profile-dept').textContent = dept.name || 'General';
+    document.getElementById('profile-dept').textContent = dept ? dept.name : 'General';
 
     // Load Posts for the target user, but pass logged in user to check likes
     loadUserPosts(targetUserId, targetProfile, loggedInUserId);
@@ -116,6 +116,7 @@ async function loadUserPosts(targetUserId, profile, loggedInUserId) {
                 const modalPost = {
                     ...post,
                     type: 'user',
+                    author_name: profile.full_name,
                     profiles: {
                         full_name: profile.full_name,
                         department: profile.department
@@ -147,6 +148,27 @@ async function updateCounts(postId) {
         
     const commentEl = document.getElementById(`comment-count-${postId}`);
     if (commentEl) commentEl.textContent = commentCount || 0;
+}
+
+async function clickAvatar() {
+    const avatarDiv = document.getElementById('profile-avatar')
+    const fileInput = document.getElementById('fileSelect')
+
+    avatarDiv.addEventListener('click', () => {
+        fileInput.click();
+    })
+
+    fileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        
+        if (!file) return; // User canceled the file dialog
+
+        await uploadAvatar(file)
+    });
+}
+
+async function uploadAvatar(file){
+    
 }
 
 document.addEventListener('DOMContentLoaded', () => {

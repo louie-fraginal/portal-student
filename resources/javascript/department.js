@@ -56,6 +56,7 @@ async function fetchDepartmentPosts(deptId) {
 
         if (error) console.error('Error fetching notices:', error);
         
+        console.log(data);
         // Map notices to a common post format for rendering
         return (data || []).map(notice => ({
             id: notice.id,
@@ -64,7 +65,7 @@ async function fetchDepartmentPosts(deptId) {
             cover_photo: notice.image_url,
             images: notice.image_url ? [notice.image_url] : [],
             date: new Date(notice.created_at).toLocaleDateString(),
-            department: notice.department,
+            department_key: notice.department_key,
             isNotice: true
         }));
     } else {

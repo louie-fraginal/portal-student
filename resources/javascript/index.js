@@ -76,7 +76,7 @@ function renderNotices(notices) {
     container.innerHTML = ''; 
 
     notices.forEach(notice => {
-        const deptInfo = window.DEPT_MAP[notice.department] || { color: '#94a3b8' };
+        const deptInfo = window.DEPT_MAP[notice.department_key] || { color: '#94a3b8' };
         const color = deptInfo.color;
         const images = [notice.image_url].filter(img => img); 
         
@@ -86,7 +86,7 @@ function renderNotices(notices) {
 
         const button = document.createElement('button');
         button.innerHTML = `
-            <small style="color: ${color}; font-weight: 700;">${notice.department || 'OFFICIAL'}</small>
+            <small style="color: ${color}; font-weight: 700;">${notice.department_key || 'OFFICIAL'}</small>
             <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: var(--text-main)">${window.checkStringLength(notice.content, 50)}</p>
         `;
 
