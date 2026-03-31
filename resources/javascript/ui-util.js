@@ -291,23 +291,31 @@ window.showFullContent = function (postId) {
     }
 };
 
-window.createPostOverlay = function (type) {
+window.createPostOverlay = function (postType = 'user', departmentId = null) {
 
     const overlay = document.createElement('div');
     overlay.className = 'post-modal-overlay';
 
+    const modalTitle = postType === 'dept' ? `Create Post for ${departmentId}` : 'Create New Post';
+
     overlay.innerHTML = `
         <div class="post-modal-card vertical-layout" style="padding: 30px; max-width: 600px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0; color: var(--accent-primary);">Create New Post</h3>
+                <h3 style="margin: 0; color: var(--accent-primary);">${modalTitle}</h3>
                 <button class="close-btn" style="position: static; font-size: 1.5rem;">&times;</button>
             </div>
+
+            ${postType === 'dept' ? `
+                <div class="input-group">
+                <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">WHAT'S ON YOUR MIND?</label>
+                <textarea id="new-post-title" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Write a title"></textarea>
+            </div>` : ''}
+            
 
             <div class="input-group">
                 <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">WHAT'S ON YOUR MIND?</label>
                 <textarea id="new-post-content" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Write something..."></textarea>
             </div>
-
 
             <div class="upload-section" style="margin-top: 20px;">
                 <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 10px;">
@@ -372,15 +380,31 @@ window.createPostOverlay = function (type) {
     // Handle Submit
     document.getElementById('submit-post-btn').onclick = async () => {
         const content = document.getElementById('new-post-content').value.trim();
+
+        let title = null;
+
+        if (postType === 'dept') {
+            const titleElement = document.getElementById('new-post-title');
+            if (titleElement) {
+                title = titleElement.value.trim();
+            }
+
+            if (!title) {
+                window.openAlert('warning', "Department posts must have a title.");
+                return;
+            }
+        }
+
+
         if (content || selectedFiles.length > 0) {
             // Updated to handle both content and images
-            window.handlePostSubmission(content, selectedFiles);
+            window.handlePostSubmission(content, selectedFiles, postType, departmentId, title);
             overlay.remove();
         }
     };
 };
 
-window.handlePostSubmission = async function (content, selectedFiles = []) {
+window.handlePostSubmission = async function (content, selectedFiles = [], postType = 'user', departmentId = null, title = null) {
     const user = window.currentUser;
     if (!user) {
         window.openAlert('warning', "Please log in to post.");
@@ -397,6 +421,28 @@ window.handlePostSubmission = async function (content, selectedFiles = []) {
             const compressedBlob = window.compressImage(file, { quality: 0.7 });
             const url = await uploadPostImage(compressedBlob, file.name);
             imageUrls.push(url);
+        }
+
+        if (postType === 'dept') {
+            const deptPostData = {
+                author_id: user.id,
+                content: content,
+                department: departmentId,
+                title: title,
+                date: new Date().toISOString(),
+                image_1: imageUrls[0] || null,
+                image_2: imageUrls[1] || null,
+                image_3: imageUrls[2] || null,
+                image_4: imageUrls[3] || null,
+                image_5: imageUrls[4] || null
+            };
+
+            const {error} = await window.supabaseClient
+                .from('department_posts')
+                .insert([deptPostData])
+            
+            if (error) throw error;
+            return
         }
 
         const postData = {
@@ -426,7 +472,7 @@ window.handlePostSubmission = async function (content, selectedFiles = []) {
 };
 
 // 1. Extracted Compression Logic
-window.compressImage =  async function compressImage(file, { quality = 0.6, maxWidth = 1200 }) {
+window.compressImage = async function compressImage(file, { quality = 0.6, maxWidth = 1200 }) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -582,7 +628,7 @@ window.renderChatList = async function (user) {
 
             const avatarHtml = room.profile_picture
                 ? `<img src="${room.profile_picture}" style="width:100%; height: 100%; object-fit: cover; border-radius: 50%">`
-                :`<div style="width: 100%; height: 100%; background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%;">${initial}</div>`;
+                : `<div style="width: 100%; height: 100%; background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%;">${initial}</div>`;
 
             return `
                     <div class="chat-preview" onclick="window.loadConversation('${room.room_id}', '${safeRoomName}', '${room.profile_picture}', this)">                    <div class="profile-avatar">${avatarHtml}</div>
@@ -834,7 +880,7 @@ window.showCreateChatUI = function () {
             if (chatRoomPhoto) {
                 // Blobs don't have names, so we just provide a default one
                 photoUrl = await uploadPostImage(chatRoomPhoto, 'chatroom_avatar.jpg');
-                window.compressedChatroomPhoto = null; 
+                window.compressedChatroomPhoto = null;
             }
             if (!name) return alert('Please enter a room name');
 
@@ -1039,11 +1085,11 @@ window.toggleInfoSidebar = function () {
     if (!sidebar) return;
 
     sidebar.classList.toggle('hidden');
-    if (!sidebar.classList.contains('hidden')) {                
+    if (!sidebar.classList.contains('hidden')) {
         const roomId = window.currentChatRoomId;
         const roomName = document.getElementById('active-chat-name').textContent;
         // Grab the photo we saved globally in loadConversation
-        const profilePicture = window.currentChatRoomPhoto; 
+        const profilePicture = window.currentChatRoomPhoto;
 
         if (roomId && roomName !== 'Select a chat') {
             window.renderChatInfo(roomId, roomName, profilePicture);

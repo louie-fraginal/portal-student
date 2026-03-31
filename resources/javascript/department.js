@@ -15,7 +15,7 @@ async function initDepartment() {
     // Set theme colors based on department
     document.documentElement.style.setProperty('--dept-color', dept.color);
     document.documentElement.style.setProperty('--dept-color-light', `${dept.color}22`);
-    
+
     // Update UI elements
     const deptBadge = document.getElementById('dept-badge');
     const deptName = document.getElementById('dept-name');
@@ -27,7 +27,7 @@ async function initDepartment() {
     if (deptName) deptName.textContent = dept.name;
     if (deptIntro) deptIntro.textContent = dept.intro;
     if (deptHeader) deptHeader.style.backgroundImage = `url(${dept.image})`;
-    
+
     if (deptLink) {
         if (dept.fb_link) {
             deptLink.style.display = 'inline-block';
@@ -55,7 +55,7 @@ async function fetchDepartmentPosts(deptId) {
             .order('created_at', { ascending: false });
 
         if (error) console.error('Error fetching notices:', error);
-        
+
         console.log(data);
         // Map notices to a common post format for rendering
         return (data || []).map(notice => ({
@@ -76,7 +76,7 @@ async function fetchDepartmentPosts(deptId) {
             .order('date', { ascending: false });
 
         if (error) console.error('Error fetching department posts:', error);
-        
+
         return (data || []).map(post => ({
             id: post.id,
             title: post.title,
@@ -94,7 +94,7 @@ async function fetchDepartmentPosts(deptId) {
 function renderPosts(posts, deptId) {
     const grid = document.getElementById('posts-grid');
     if (!grid) return;
-    
+
     grid.innerHTML = '';
 
     if (posts.length === 0) {
@@ -145,7 +145,48 @@ function setupScrollAnimations() {
     });
 }
 
+async function initCreatePostOverlay() {
+    let user = window.currentUser;
+    if (!user) {
+        const { data } = await window.supabaseClient.auth.getUser();
+        user = data.user;
+        window.currentUser = user;
+        window.currentUserId = user.id;
+    }
+
+    const {data : profileData} = await window.supabaseClient
+        .from('profiles')
+        .select('user_type, department')
+        .eq('id', user.id)
+        .single()
+
+    const userDepartment = profileData.department;
+    const userType = profileData ? profileData.user_type : user.user_metadata.user_type;
+
+    console.log("auth type: ", user.user_metadata.user_type);
+    console.log('actual type: ', userType);
+
+    const floatingActions = document.getElementById('floating-actions');
+    if (userType === 'dept') {
+        floatingActions.innerHTML = `
+        <button class="v2-fab secondary" onclick="window.openChat(event)">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg></span>
+        <button class="v2-fab" onclick="window.createPostOverlay('dept', '${userDepartment}')">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg></span>
+        </button>
+        `;
+    }
+}
+
 // Wait for configuration to be ready
 document.addEventListener('DOMContentLoaded', () => {
     initDepartment();
+    initCreatePostOverlay();
 });

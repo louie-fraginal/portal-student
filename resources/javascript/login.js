@@ -77,8 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const confirm = document.getElementById('reg_confirm').value;
         const program = document.getElementById('reg_program').value;
 
-        
-
         if (password !== confirm) {
             alert("Passwords do not match!");
             return;
