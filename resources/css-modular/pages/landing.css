@@ -139,6 +139,14 @@ section {
     border-color: var(--accent-primary);
 }
 
+.muted-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 20px 0 8px 0;
+}
+
 /* Nav specific to landing if needed (e.g. fixed) */
 .landing-nav {
     position: fixed;

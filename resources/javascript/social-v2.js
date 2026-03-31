@@ -7,15 +7,15 @@ window.isFetchingPosts = false;
 window.hasMorePosts = true;
 const POSTS_PER_PAGE = 20;
 
-window.renderEvents = function(events) { renderHeroAnnouncement(events); };
-window.renderRecents = function(recents) { renderRecently(recents); };
+window.renderEvents = function (events) { renderHeroAnnouncement(events); };
+window.renderRecents = function (recents) { renderRecently(recents); };
 
 // Profile ready listener for index.js integration
 window.addEventListener('profileReady', () => {
     initSocial();
 });
 
-window.setupInfiniteScroll = function() {
+window.setupInfiniteScroll = function () {
     const feedContainer = document.getElementById('social-feed-container');
     if (!feedContainer) return;
 
@@ -24,12 +24,12 @@ window.setupInfiniteScroll = function() {
         loader = document.createElement('div');
         loader.id = 'feed-loader-element';
         loader.style.cssText = 'text-align: center; padding: 20px; color: var(--v2-text-dim); width: 100%; font-size: 0.9rem;';
-        feedContainer.appendChild(loader); 
+        feedContainer.appendChild(loader);
     }
 
     const options = {
-        root: feedContainer, 
-        rootMargin: '200px', 
+        root: feedContainer,
+        rootMargin: '200px',
         threshold: 0.1
     };
 
@@ -37,7 +37,7 @@ window.setupInfiniteScroll = function() {
         const target = entries[0];
         if (target.isIntersecting && !window.isFetchingPosts && window.hasMorePosts) {
             console.log("Infinite scroll triggered...");
-            window.renderSocialFeed(false); 
+            window.renderSocialFeed(false);
         }
     }, options);
 
@@ -50,25 +50,25 @@ async function initSocial() {
     window.socialInitialized = true;
 
     console.log("Initializing Social V2...");
-    
+
     // 1. Handle User Profile Header
     const profileName = window.profile ? window.profile.full_name : 'Student';
     const userInitial = document.getElementById('user-initial');
     const userFirstName = document.getElementById('user-firstname');
     const userFullName = document.getElementById('user-fullname');
-    
+
     if (userInitial) userInitial.textContent = profileName.charAt(0);
     if (userFirstName) userFirstName.textContent = profileName.split(' ')[0];
     if (userFullName) userFullName.textContent = profileName;
 
     // 2. Load Main Feed (Initial batch)
     await window.renderSocialFeed(true);
-    
+
     // 3. Setup infinite scroll after initial load
     window.setupInfiniteScroll();
 }
 
-window.renderSocialFeed = async function(isInitialLoad = true) {
+window.renderSocialFeed = async function (isInitialLoad = true) {
     const feedContainer = document.getElementById('social-feed-container');
     let loader = document.getElementById('feed-loader-element');
     if (!feedContainer) return;
@@ -76,13 +76,13 @@ window.renderSocialFeed = async function(isInitialLoad = true) {
     if (isInitialLoad) {
         window.currentPostOffset = 0;
         window.hasMorePosts = true;
-        feedContainer.innerHTML = ''; 
+        feedContainer.innerHTML = '';
         // Re-create loader if cleared
         if (loader) feedContainer.appendChild(loader);
     }
 
     if (window.isFetchingPosts || !window.hasMorePosts) return;
-    
+
     window.isFetchingPosts = true;
     loader = document.getElementById('feed-loader-element');
 
@@ -116,7 +116,7 @@ window.renderSocialFeed = async function(isInitialLoad = true) {
         if (currentUserId && feed.length > 0) {
             const deptPostIds = feed.filter(p => p.type === 'dept').map(p => p.id.toString());
             const userPostIds = feed.filter(p => p.type === 'user').map(p => p.id.toString());
-            
+
             if (deptPostIds.length > 0) {
                 const { data: dLikes } = await window.supabaseClient
                     .from('post_likes')
@@ -159,19 +159,20 @@ function renderPostCard(post, container, hasLiked, userId) {
     const postCard = document.createElement('div');
     postCard.className = 'v2-post-card';
 
-    const authorName = post.author_name || 'Student';
+    // const authorName = post.author_name || 'Student';
     const deptKey = post.department_key;
     const accentColor = window.DEPT_MAP[deptKey]?.color || 'var(--v2-green)';
     const isDept = post.type === 'dept';
+    const authorName = isDept ? window.DEPT_MAP[deptKey].name : post.author_name || 'Student';
 
     postCard.style.setProperty('--post-accent', accentColor);
     const timeAgo = window.formatTimeAgo(post.timestamp);
     const images = [post.image_1, post.image_2, post.image_3, post.image_4, post.image_5].filter(img => img);
 
-    const headerClickAction = !isDept && post.author_id 
-        ? `onclick="event.stopPropagation(); window.location.href='profile.html?uid=${post.author_id}'" style="cursor: pointer;"` 
+    const headerClickAction = !isDept && post.author_id
+        ? `onclick="event.stopPropagation(); window.location.href='profile.html?uid=${post.author_id}'" style="cursor: pointer;"`
         : '';
-        
+
     postCard.innerHTML = `
         <div class="v2-post-header" ${headerClickAction}>
             <div class="v2-post-avatar" style="box-shadow: 0 0 10px ${accentColor}44; border-color: ${accentColor};">
@@ -205,7 +206,7 @@ function renderPostCard(post, container, hasLiked, userId) {
     });
 
     container.appendChild(postCard);
-    
+
     window.updateLikeDisplay(post.id, post.type);
     window.updateCommentCountUI(post.id);
 }
@@ -213,7 +214,7 @@ function renderPostCard(post, container, hasLiked, userId) {
 function renderRecently(recents) {
     const container = document.getElementById('recently-container');
     if (!container) return;
-    
+
     if (!recents || recents.length === 0) {
         container.innerHTML = `<p style="padding:20px; font-size:0.8rem; color: #666;">No recent updates.</p>`;
         return;
@@ -232,7 +233,7 @@ function renderRecently(recents) {
             <img src="${item.image_1}" class="v2-slide-bg">
             <div class="v2-slide-content">
                 <span class="v2-tag">Recent</span>
-                <h3 style="margin:0">${item.department}</h3>
+                <h3 style="margin:0">${item.department_key}</h3>
             </div>`;
         track.appendChild(slide);
     });
@@ -270,7 +271,7 @@ function renderHeroAnnouncement(events) {
     container.appendChild(track);
 }
 
-window.toggleLike = async function(event, postId, postType) {
+window.toggleLike = async function (event, postId, postType) {
     event.stopPropagation();
     const user = window.currentUser || (await window.supabaseClient.auth.getUser()).data.user;
     if (!user) return alert("Please log in to like posts.");
@@ -306,7 +307,7 @@ window.toggleLike = async function(event, postId, postType) {
     await window.updateLikeDisplay(postId, postType);
 }
 
-window.updateLikeDisplay = async function(postId, postType = 'dept') {
+window.updateLikeDisplay = async function (postId, postType = 'dept') {
     const table = postType === 'dept' ? 'post_likes' : 'user_post_likes';
     const safeId = postType === 'dept' ? parseInt(postId) : postId;
 
@@ -323,7 +324,7 @@ window.updateLikeDisplay = async function(postId, postType = 'dept') {
     }
 }
 
-window.updateCommentCountUI = async function(postId) {
+window.updateCommentCountUI = async function (postId) {
     const { count } = await window.supabaseClient
         .from('post_comments')
         .select('*', { count: 'exact', head: true })
@@ -335,7 +336,7 @@ window.updateCommentCountUI = async function(postId) {
 
 function setupRealtimeSubscriptions() {
     const tables = ['department_posts', 'user_posts', 'post_likes', 'user_post_likes', 'post_comments'];
-    
+
     tables.forEach(table => {
         window.supabaseClient
             .channel(`${table}-changes-v2`)
@@ -361,7 +362,7 @@ function setupRealtimeSubscriptions() {
 
 document.addEventListener('DOMContentLoaded', () => {
     setupRealtimeSubscriptions();
-    
+
     // If profile is already attached to window (from index.js fast load)
     if (window.profile) {
         initSocial();

@@ -101,13 +101,18 @@
                 <!-- Loaded via JS -->
             </div>
 
-            <div class="v2-card v2-profile-card" style="cursor: pointer;" onclick="window.location.href='profile.html'">
+            <div class="v2-card v2-profile-card" style="cursor: pointer;" onclick="window.checkUserProfile()">
                 <div class="v2-avatar" id="user-initial">U</div>
                 <div class="v2-profile-info">
                     <div class="v2-username" id="user-fullname">Loading...</div>
                     <div class="v2-userrole" id="user-role-display"></div>
                 </div>
             </div>
+
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+            </button>
         </aside>
 
         <!-- Center Feed -->
@@ -150,7 +155,7 @@
                 </svg></span>
         </button>
     </div>
-    
+
 </body>
 
 </html>

@@ -3,6 +3,10 @@
     --dept-color-light: rgba(99, 102, 241, 0.1);
 }
 
+body {
+    overflow: auto;
+}
+
 .dept-header {
     grid-column: span 3;
     height: 400px;

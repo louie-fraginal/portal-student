@@ -65,6 +65,20 @@ window.openAlert = async function (type, text) {
     }, 5000);
 }
 
+window.checkUserProfile = async function(userId) {
+    const { data: targetProfile, error: profileError } = await window.supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', targetUserId)
+        .single();
+
+    if (targetProfile.user_type === 'dept') {
+        window.href.location = `department.html?dept=${targetProfile.department_key}`;
+    } else {
+        window.href.location = 'profile.html';
+    }
+}
+
 window.openPostModal = async function (post, images, isNotice = false) {
     const overlay = document.createElement('div');
     overlay.className = 'post-modal-overlay';
@@ -418,7 +432,7 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
 
         // Upload all selected images (Max 5)
         for (const file of selectedFiles) {
-            const compressedBlob = window.compressImage(file, { quality: 0.7 });
+            const compressedBlob = await window.compressImage(file, { quality: 0.7 });
             const url = await uploadPostImage(compressedBlob, file.name);
             imageUrls.push(url);
         }
@@ -427,7 +441,7 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
             const deptPostData = {
                 author_id: user.id,
                 content: content,
-                department: departmentId,
+                department_key: departmentId,
                 title: title,
                 image_1: imageUrls[0] || null,
                 image_2: imageUrls[1] || null,
@@ -471,13 +485,11 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
 };
 
 // 1. Extracted Compression Logic
-window.compressImage = async function compressImage(file, { quality = 0.6, maxWidth = 1200 }) {
+window.compressImage = async function compressImage(file, { quality = 0.8, maxWidth = 1200 }) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
         reader.onload = (event) => {
             const img = new Image();
-            img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
@@ -497,8 +509,10 @@ window.compressImage = async function compressImage(file, { quality = 0.6, maxWi
                     resolve(blob);
                 }, 'image/jpeg', quality);
             };
+            img.src = event.target.result;
             img.onerror = (err) => reject(err);
         };
+        reader.readAsDataURL(file)
         reader.onerror = (err) => reject(err);
     });
 }
@@ -746,7 +760,7 @@ window.previewImage = async function (event) {
         const originalFile = input.files[0];
 
         try {
-            const compressedBlob = window.compressImage(originalFile, { quality: 0.7, maxWidth: 800 });
+            const compressedBlob = await window.compressImage(originalFile, { quality: 0.7, maxWidth: 800 });
 
             // Save the compressed Blob, submit button can grab it later
             window.compressedChatroomPhoto = compressedBlob;
@@ -1104,6 +1118,7 @@ window.renderChatInfo = async function (roomId, roomName, profilePicture) {
     if (!nameEl || !avatarEl || !membersList) return;
 
     nameEl.textContent = roomName;
+    
 
     // Apply the custom photo logic to the big RIGHT SIDEBAR avatar (avatarEl)
     if (profilePicture && profilePicture !== 'null' && profilePicture !== 'undefined') {
@@ -1200,6 +1215,7 @@ window.loadConversation = async function (roomId, roomName, profilePicture, elem
     window.currentChatRoomPhoto = profilePicture;
 
     if (roomName) {
+        window.renderChatInfo(roomId, roomName, profilePicture);
         console.log(roomName);
         document.getElementById('active-chat-name').textContent = roomName;
         const avatarContainer = document.getElementById('active-chat-avatar');

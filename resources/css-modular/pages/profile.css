@@ -3,6 +3,7 @@
     --profile-color-light: rgba(152, 255, 179, 0.1);
 }
 
+
 .profile-header {
     grid-column: span 3;
     height: 400px;

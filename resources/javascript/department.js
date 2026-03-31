@@ -72,7 +72,7 @@ async function fetchDepartmentPosts(deptId) {
         const { data, error } = await window.supabaseClient
             .from('department_posts')
             .select('*')
-            .eq('department', deptId)
+            .eq('department_key', deptId)
             .order('date', { ascending: false });
 
         if (error) console.error('Error fetching department posts:', error);
@@ -84,7 +84,7 @@ async function fetchDepartmentPosts(deptId) {
             cover_photo: post.image_1,
             images: [post.image_1, post.image_2, post.image_3, post.image_4, post.image_5].filter(img => img),
             date: new Date(post.date).toLocaleDateString(),
-            department: post.department,
+            department_key: post.department_key,
             isNotice: false
         }));
     }
@@ -166,8 +166,14 @@ async function initCreatePostOverlay() {
     console.log("auth type: ", user.user_metadata.user_type);
     console.log('actual type: ', userType);
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const deptId = urlParams.get('dept') || '';
+    const dept = window.DEPT_MAP[deptId];
+
+    console.log(dept);
+
     const floatingActions = document.getElementById('floating-actions');
-    if (userType === 'dept') {
+    if (userType === 'dept' && userDepartment === dept.shortName) {
         floatingActions.innerHTML = `
         <button class="v2-fab secondary" onclick="window.openChat(event)">
             <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
