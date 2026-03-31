@@ -429,7 +429,6 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
                 content: content,
                 department: departmentId,
                 title: title,
-                date: new Date().toISOString(),
                 image_1: imageUrls[0] || null,
                 image_2: imageUrls[1] || null,
                 image_3: imageUrls[2] || null,
@@ -437,10 +436,10 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
                 image_5: imageUrls[4] || null
             };
 
-            const {error} = await window.supabaseClient
+            const { error } = await window.supabaseClient
                 .from('department_posts')
                 .insert([deptPostData])
-            
+
             if (error) throw error;
             return
         }
