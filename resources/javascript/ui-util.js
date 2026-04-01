@@ -65,17 +65,29 @@ window.openAlert = async function (type, text) {
     }, 5000);
 }
 
-window.checkUserProfile = async function(userId) {
-    const { data: targetProfile, error: profileError } = await window.supabaseClient
+window.checkUserProfile = async function () {
+    let user = window.currentUser;
+    if (!user) {
+        const { data } = await window.supabaseClient.auth.getUser();
+        user = data.user;
+        window.currentUser = user;
+        window.currentUserId = user.id;
+    }
+        
+    const { data: profileData } = await window.supabaseClient
         .from('profiles')
-        .select('*')
-        .eq('id', targetUserId)
-        .single();
+        .select('user_type, department')
+        .eq('id', user.id)
+        .single()
 
-    if (targetProfile.user_type === 'dept') {
-        window.href.location = `department.html?dept=${targetProfile.department_key}`;
+
+    const userDepartment = profileData.department;
+    const userType = profileData ? profileData.user_type : user.user_metadata.user_type;
+
+    if (userType === 'dept') {
+        window.location.href = `department.html?dept=${userDepartment}`;
     } else {
-        window.href.location = 'profile.html';
+        window.location.href = 'profile.html';
     }
 }
 
@@ -1118,7 +1130,7 @@ window.renderChatInfo = async function (roomId, roomName, profilePicture) {
     if (!nameEl || !avatarEl || !membersList) return;
 
     nameEl.textContent = roomName;
-    
+
 
     // Apply the custom photo logic to the big RIGHT SIDEBAR avatar (avatarEl)
     if (profilePicture && profilePicture !== 'null' && profilePicture !== 'undefined') {

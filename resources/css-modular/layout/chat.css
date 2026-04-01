@@ -350,8 +350,6 @@ body.dark-mode .message-bubble-wrapper:not(.is-me) .message-bubble {
     color: var(--inverted-text-color);
     border-bottom-right-radius: 2px;
     text-align: left;
-    align-content: right;
-    align-self: right;
 }
 
 .message-meta {
