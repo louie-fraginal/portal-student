@@ -63,4 +63,8 @@
     --destructive-foreground: #ffffff;
     --sidebar-accent-foreground: #1e9df1;
     --sidebar-primary-foreground: #ffffff;
+
+    /* Department Variables */
+    --dept-color: var(--accent-primary);
+    --dept-color-light: rgba(99, 102, 241, 0.1);
 }

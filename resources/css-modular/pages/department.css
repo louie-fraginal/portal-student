@@ -1,7 +1,4 @@
-:root {
-    --dept-color: var(--accent-primary);
-    --dept-color-light: rgba(99, 102, 241, 0.1);
-}
+/* resources/css-modular/pages/department.css */
 
 body {
     overflow: auto;
@@ -144,19 +141,6 @@ body {
 .read-more-tag {
     opacity: 0.6;
 }
-
-/* @media (max-width: 1100px) {
-    .posts-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        grid-column: span 3;
-    }
-
-    .dept-header h1 {
-        font-size: 3rem;
-    }
-} */
 
 @media (max-width: 768px) {
     .posts-grid {

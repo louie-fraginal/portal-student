@@ -72,7 +72,7 @@ window.checkUserProfile = async function () {
         window.currentUser = user;
         window.currentUserId = user.id;
     }
-        
+
     const { data: profileData } = await window.supabaseClient
         .from('profiles')
         .select('user_type, department')
@@ -689,7 +689,7 @@ window.renderChatList = async function (user) {
                 : `<div style="width: 100%; height: 100%; background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%;">${initial}</div>`;
 
             return `
-                    <div class="chat-preview" onclick="window.loadConversation('${room.room_id}', '${safeRoomName}', '${room.profile_picture}', this)">                    <div class="profile-avatar">${avatarHtml}</div>
+                    <div class="chat-preview" onclick="window.loadConversation('${room.room_id}', '${safeRoomName}', '${room.profile_picture}', this)"><div class="profile-avatar">${avatarHtml}</div>
                     <div class="chat-info">
                         <div class="chat-name-row">
                             <span class="chat-name">${room.room_name}</span>
@@ -1074,11 +1074,11 @@ window.openChat = async function (e) {
                         <button class="info-actions-btn" id="info-actions-toggle">
                             Settings ▾
                         </button>
-                        <div class="dropdown-menu" id="info-dropdown-menu">
-                            <div class="dropdown-item" id="change-chat-name-btn">
+                        <div class="chat-info-dropdown" id="info-dropdown-menu">
+                            <div class="chat-info-dropdown-item" id="change-chat-name-btn">
                                 <span>✏️</span> Change Name
                             </div>
-                            <div class="dropdown-item" id="change-chat-photo-btn">
+                            <div class="chat-info-dropdown-item" id="change-chat-photo-btn">
                                 <span>📸</span> Change Photo
                             </div>
                         </div>
@@ -1166,7 +1166,7 @@ window.toggleInfoSidebar = function () {
 
     const card = document.getElementById('chat-modal-card');
     sidebar.classList.toggle('hidden');
-    
+
     if (!sidebar.classList.contains('hidden')) {
         if (card) {
             card.classList.remove('mobile-view-chat');
@@ -1243,33 +1243,74 @@ window.changeChatName = async function () {
     const roomId = window.currentChatRoomId;
     if (!roomId) return;
 
-    const oldName = document.getElementById('active-chat-name').textContent;
-    const newName = prompt("Enter new chat name:", oldName);
+    const oldName = document.getElementById('active-chat-name').textContent.trim();
 
-    if (newName && newName.trim() && newName !== oldName) {
-        try {
-            const { error } = await window.supabaseClient
-                .from('chat_room')
-                .update({ name: newName.trim() })
-                .eq('id', roomId);
+    const overlay = document.createElement('div');
+    overlay.className = 'post-modal-overlay';
 
-            if (error) throw error;
+    overlay.innerHTML = `
+        <div class="post-modal-card vertical-layout" style="padding: 30px; max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: var(--accent-primary);">Change Chat Name</h3>
+                <button class="close-btn" style="position: static; font-size: 1.5rem;">&times;</button>
+            </div>
 
-            const trimmedName = newName.trim();
-            document.getElementById('active-chat-name').textContent = trimmedName;
-            document.getElementById('info-room-name').textContent = trimmedName;
-            document.getElementById('info-room-avatar').textContent = trimmedName.charAt(0).toUpperCase();
-            document.getElementById('active-chat-avatar').textContent = trimmedName.charAt(0).toUpperCase();
+            <div class="input-group">
+                <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">WHAT'S ON YOUR MIND?</label>
+                <textarea id="new-name-chatroom" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="..."></textarea>
+            </div>
 
-            // Refresh chat list to update name there
-            if (window.currentUser) {
-                window.renderChatList(window.currentUser);
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn-primary" id="change-name-btn" style="flex: 1; font-weight: 600">Change Name</button>
+            </div>
+        </div>
+    `;
+
+    overlay.onclick = (e) => {
+        if (e.target === overlay || e.target.classList.contains('close-btn')) overlay.remove();
+    };
+
+    document.body.appendChild(overlay);
+
+    document.getElementById('change-name-btn').onclick = async () => {
+        const newName = document.getElementById('new-name-chatroom').value;
+        if (newName && newName.trim() && newName !== oldName) {
+            try {
+                const { data, error, count } = await window.supabaseClient
+                    .from('chat_room')
+                    .update({ name: newName.trim() })
+                    .eq('id', roomId)
+                    .select();
+
+                if (error) throw error;
+
+                const trimmedName = newName.trim();
+                document.getElementById('active-chat-name').textContent = trimmedName;
+                document.getElementById('info-room-name').textContent = trimmedName;
+                document.getElementById('info-room-avatar').textContent = trimmedName.charAt(0).toUpperCase();
+                document.getElementById('active-chat-avatar').textContent = trimmedName.charAt(0).toUpperCase();
+
+                console.log("Rows affected:", count);
+                console.log("Updated data:", data);
+
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    console.log(roomId)
+                    console.warn("No rows matched that ID or RLS blocked the update.");
+                    return;
+                }
+
+                // Refresh chat list to update name there
+                if (window.currentUser) {
+                    window.renderChatList(window.currentUser);
+                }
+
+                window.openAlert('success', "Chat name updated!");
+                overlay.remove();
+            } catch (err) {
+                console.error("Failed to update chat name:", err);
+                window.openAlert('warning', "Error: " + err.message);
             }
-
-            window.openAlert('success', "Chat name updated!");
-        } catch (err) {
-            console.error("Failed to update chat name:", err);
-            window.openAlert('warning', "Error: " + err.message);
         }
     }
 };

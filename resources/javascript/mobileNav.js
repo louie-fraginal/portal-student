@@ -1,6 +1,9 @@
+
+let currentWebpage = ''
+
 document.body.innerHTML += `
     <nav class="v2-bottom-nav">
-        <a href="social-v2.html" class="v2-nav-item active">
+        <a href="social-v2.html" class="v2-nav-item" id="socialItem">
             <span class="v2-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -10,7 +13,7 @@ document.body.innerHTML += `
             </span>
             <span>Home</span>
         </a>
-        <a href="javascript:void(0)" class="v2-nav-item" onclick="window.toggleDiscoverMenu()">
+        <a href="javascript:void(0)" class="v2-nav-item" id="discoverItem" onclick="window.toggleDiscoverMenu()">
             <span class="v2-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -38,7 +41,7 @@ document.body.innerHTML += `
             </span>
             <span>Chat</span>
         </a>
-        <a href="javascript:void(0)" class="v2-nav-item" onclick="window.checkUserProfile()">
+        <a href="javascript:void(0)" class="v2-nav-item" id="profileItem"onclick="window.checkUserProfile()">
             <span class="v2-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -143,4 +146,40 @@ document.body.innerHTML += `
             </div>
         </div>
     </div>
-`
+`;
+
+
+window.toggleDiscoverMenu = function () {
+    const modal = document.getElementById('v2-discover-modal');
+    if (!modal) return;
+
+    const isActive = modal.classList.contains('active');
+    if (isActive) {
+        modal.classList.remove('active');
+        document.body.classList.remove('discover-open');
+    } else {
+        modal.classList.add('active');
+        document.body.classList.add('discover-open');
+    }
+};
+
+// Close Discovery Modal on background click
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('v2-discover-modal');
+    if (modal && modal.classList.contains('active') && e.target === modal) {
+        window.toggleDiscoverMenu();
+    }
+});
+
+const path = window.location.pathname.split("/").pop();
+const navMap = {
+    'social-v2.html': 'socialItem',
+    'profile.html': 'profileItem',
+    'department.html': 'discoverItem'
+};
+
+const activeId = navMap[path];
+
+if (activeId) {
+    document.getElementById(activeId).classList.add('active');
+}

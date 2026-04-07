@@ -21,6 +21,8 @@
 
 
 /* 5. Page-specific Styles (Imported as needed by HTML files, but listed here for reference) */
+@import url('pages/department.css');
+
 /* 
 @import url('pages/admin.css');
 @import url('pages/chat.css');

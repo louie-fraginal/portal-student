@@ -239,12 +239,140 @@
     width: 100% !important;
 }
 
+.post-modal-card.form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .fadeIn {
     animation: slideUpFade 0.4s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .fadeOut {
     animation: slideUpFadeOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+body.discover-open {
+    overflow: hidden; /* Prevent background scroll when modal is open */
+}
+
+/* Discovery Modal Styling */
+.v2-discover-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    inset: 0;
+    background: var(--bg-color);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.v2-discover-overlay.active {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+.v2-discover-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 30px 30px 0 0;
+    padding: 24px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 80vh;
+    overflow-y: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+.v2-discover-overlay.active .v2-discover-content {
+    transform: translateY(0);
+}
+
+.v2-discover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.v2-discover-header h3 {
+    margin: 0 !important;
+    color: var(--accent-primary) !important;
+    font-size: 1.4rem !important;
+    text-transform: none !important;
+}
+
+.v2-close-discover {
+    background: var(--input-bg);
+    color: var(--accent-primary);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.v2-discover-section {
+    margin-bottom: 24px;
+}
+
+.v2-discover-section label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.v2-discover-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+
+.v2-discover-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.v2-discover-grid .v2-discover-link {
+    margin-bottom: 0;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+
+.v2-discover-grid .v2-icon {
+    font-size: 1.5rem;
+}
+
+.v2-discover-grid span:not(.v2-icon) {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.v2-discover-link:active {
+    background: var(--card-bg);
+    border-color: var(--accent-primary);
+    transform: scale(0.98);
 }
 
 @keyframes zoomIn {

@@ -1058,6 +1058,26 @@ svg:hover {
     /* for Firefox */
 }
 
+.post-modal-card {
+    background: rgba(0, 0, 0, 0.263);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 45vw;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: scroll;
+    /* Scroll inside if post is too long */
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+    overflow: scroll;
+    -ms-overflow-style: none;
+    /* for Internet Explorer, Edge */
+    scrollbar-width: none;
+    /* for Firefox */
+}
+
 .modal-image {
     display: block;
     width: 100%;
