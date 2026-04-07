@@ -195,13 +195,12 @@ function renderPostCard(post, container, hasLiked, userId) {
             </button>
             <button class="v2-action-btn">
                 <span class="v2-icon">💬</span>
-                <span id="count-${post.id}">0</span>
+                <span id="count-${post.id}">0</span>    
             </button>
         </div>
     `;
 
     postCard.addEventListener('click', (e) => {
-        if (e.target.closest('button')) return;
         window.openPostModal(post, images, false);
     });
 
@@ -359,6 +358,28 @@ function setupRealtimeSubscriptions() {
             .subscribe();
     });
 }
+
+window.toggleDiscoverMenu = function () {
+    const modal = document.getElementById('v2-discover-modal');
+    if (!modal) return;
+
+    const isActive = modal.classList.contains('active');
+    if (isActive) {
+        modal.classList.remove('active');
+        document.body.classList.remove('discover-open');
+    } else {
+        modal.classList.add('active');
+        document.body.classList.add('discover-open');
+    }
+};
+
+// Close Discovery Modal on background click
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('v2-discover-modal');
+    if (modal && modal.classList.contains('active') && e.target === modal) {
+        window.toggleDiscoverMenu();
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     setupRealtimeSubscriptions();

@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 alert('Announcement posted successfully!');
                 announcementForm.reset();
-                document.getElementById('announcement-preview-container').innerHTML = '<p style="opacity: 0.5;">Announcement preview will appear here...</p>';
+                document.getElementById('announcement-preview-container').innerHTML = '<p class="preview-placeholder">Announcement preview will appear here...</p>';
             } catch (err) {
                 console.error('Error posting announcement:', err);
                 alert('Failed to post announcement: ' + err.message);
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 alert('Event posted successfully!');
                 eventForm.reset();
-                document.getElementById('event-preview').innerHTML = '<p style="opacity: 0.5;">Event preview will appear here...</p>';
+                document.getElementById('event-preview').innerHTML = '<p class="preview-placeholder">Event preview will appear here...</p>';
             } catch (err) {
                 console.error('Error posting event:', err);
                 alert('Failed to post event: ' + err.message);
@@ -172,15 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const card = document.createElement('div');
         card.className = 'post-card-bento visible';
-        card.style.opacity = '1';
-        card.style.transform = 'none';
 
         const deptColor = window.DEPT_MAP[data.category]?.color || 'var(--accent-primary)';
 
         card.innerHTML = `
             ${data.image ? `<img src="${data.image}" class="post-card-image" alt="Preview">` : ''}
-            <div style="padding: 15px 0;">
-                <span class="tag" style="background: ${deptColor}; color: white; margin-bottom: 10px; display: inline-block;">${data.category}</span>
+            <div class="preview-body">
+                <span class="tag preview-tag" style="background: ${deptColor};">${data.category}</span>
                 <h2 class="post-card-title">${data.title || 'Official Announcement'}</h2>
                 <p class="post-card-text">${data.content || 'No content provided.'}</p>
             </div>

@@ -28,6 +28,7 @@ main.landing-main {
 body.dark-mode .hero h1 {
     background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -149,6 +150,7 @@ section {
 
 /* Nav specific to landing if needed (e.g. fixed) */
 .landing-nav {
+    justify-content: space-between;
     position: fixed;
     top: 0;
     left: 0;

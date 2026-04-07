@@ -68,3 +68,17 @@
     background-color: var(--accent-primary);
     color: #000;
 }
+
+.preview-placeholder {
+    opacity: 0.5;
+}
+
+.preview-body {
+    padding: 15px 0;
+}
+
+.preview-tag {
+    color: white;
+    margin-bottom: 10px;
+    display: inline-block;
+}

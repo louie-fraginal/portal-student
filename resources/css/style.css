@@ -172,7 +172,6 @@ body.dark-mode .noise-bg::after {
 /* --- NAV --- */
 nav {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    padding: 1.5rem 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1094,6 +1093,10 @@ svg:hover {
     cursor: pointer;
 }
 
+.static-close {
+    position: static !important;
+}
+
 .modal-gallery {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -1164,6 +1167,9 @@ svg:hover {
 }
 
 .comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 15px;
     font-weight: 800;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);

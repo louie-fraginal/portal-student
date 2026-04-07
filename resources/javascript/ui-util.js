@@ -30,18 +30,17 @@ window.openAlert = async function (type, text) {
     console.log(typeColor);
 
     const overlay = document.createElement('div');
-    overlay.className = 'post-modal-overlay';
-    overlay.style.backdropFilter = 'blur(0px)'
+    overlay.className = 'post-modal-overlay no-blur';
 
     overlay.innerHTML = `
         <div class="post-modal-card alert fadeIn">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <h2 style="color:${typeColor};">${typeTitle}</h2>
-                <button class="close-btn" style="position: static; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <div class="modal-header alert-header">
+                <h2 class="alert-title" style="color:${typeColor};">${typeTitle}</h2>
+                <button class="close-btn static-close">&times;</button>
             </div>
 
-            <h3 style="margin-top: 20px; word-break: break-word; white-space: pre-wrap; color: var(--text-main);">${text}</h3>
-            <p style="color: var(--text-muted)">This pop-up will close in a bit.</p>
+            <h3 class="alert-text">${text}</h3>
+            <p class="alert-muted">This pop-up will close in a bit.</p>
         </div>
     `
 
@@ -115,38 +114,38 @@ window.openPostModal = async function (post, images, isNotice = false) {
     overlay.innerHTML = `
         <div class="post-modal-card ${layoutClass}">
             ${!hasImages ? `
-                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div class="modal-header modal-header-padded">
                     <span class="tag" style="background-color: ${deptColor}; color: #000000">${authorName}</span>
-                    <button class="close-btn" style="position: static; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+                    <button class="close-btn static-close">&times;</button>
                 </div>
             ` : ''}
 
-            <div class="modal-main" style="${!hasImages ? 'border: none; padding: 20px;' : ''}">
+            <div class="modal-main ${!hasImages ? 'modal-main-no-images' : ''}">
                 ${hasImages ? `
                     <img src="${validImages[0]}" class="modal-image" onclick="window.openFullImage('${validImages[0]}')">
                     <div class="modal-gallery">
                         ${validImages.slice(1).map(img => `<img src="${img}" class="gallery-image" onclick="window.openFullImage('${img}')">`).join('')}
                     </div>
                 ` : `
-                    <div class="modal-content" style="color: #ccc; padding: 0; border: none; font-size: 0.9rem">${content}</div>
+                    <div class="modal-content modal-content-no-images">${content}</div>
                 `}
             </div>
 
-            <aside class="modal-comments-sidebar" style="${!hasImages ? 'border: none;' : ''}">
-                <div class="comments-header" style="${!hasImages ? 'display: none;' : 'display: flex; justify-content: space-between; align-items: center;'}">
+            <aside class="modal-comments-sidebar ${!hasImages ? 'modal-comments-sidebar-no-images' : ''}">
+                <div class="comments-header ${!hasImages ? 'comments-header-hidden' : ''}">
                     ${hasImages ? `
                         <span class="tag" style="background-color: ${deptColor};">${authorName}</span>
-                        <button class="close-btn" style="position: static; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+                        <button class="close-btn static-close">&times;</button>
                     ` : ''}
                 </div>
 
                 ${isNotice
-            ? `<h2 style="color: white; padding: 20px 20px 10px 20px !important; margin: 0;">${title}</h2>`
-            : (title ? `<h2 style="color: white; padding: 10px 20px 10px 20px !important; margin: 0;">${title}</h2>` : '')
+            ? `<h2 class="notice-title">${title}</h2>`
+            : (title ? `<h2 class="notice-title-standard">${title}</h2>` : '')
         }
 
                 ${hasImages ? `
-                    <div class="modal-content"; color: #ddd;">${content}</div>` : ''}
+                    <div class="modal-content modal-content-with-images">${content}</div>` : ''}
                 
                 ${!isNotice ? `
                     <div id="modal-comments-list" class="comments-scroll-area"></div>
@@ -157,7 +156,7 @@ window.openPostModal = async function (post, images, isNotice = false) {
                         </button>
                     </div>
                 ` : `
-                    <div class="comments-scroll-area" style="display: flex; align-items: center; justify-content: center; text-align: center; opacity: 0.6; padding: 20px;">
+                    <div class="comments-scroll-area comments-disabled-msg">
                         <p>Comments are disabled for official announcements.</p>
                     </div>
                 `}
@@ -239,12 +238,12 @@ window.loadModalComments = async function (postId) {
     }
 
     container.innerHTML = data.map(comment => `
-        <div class="comment-item" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
-            <strong style="color: white; font-size: 0.85rem;">
+        <div class="comment-item-footer">
+            <strong class="comment-author">
                 ${comment.profiles?.full_name || 'Student'}
             </strong>
-            <p style="margin: 2px 0; color: white; font-size: 0.8rem;">${comment.content}</p>
-            <span style="font-size: 0.65rem; color: #666;">
+            <p class="comment-text">${comment.content}</p>
+            <span class="comment-time">
                 ${window.formatTimeAgo(new Date(comment.created_at))}
             </span>
         </div>
@@ -297,6 +296,36 @@ window.checkStringLength = function (string, length) {
 
     return string;
 };
+
+// -- Dropdown Toggle Logic! -- //
+document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('.dropdown-trigger');
+    const container = e.target.closest('.dropdown');
+    console.log(e);
+
+
+    // Handle clicking the trigger
+    if (trigger) {
+        console.log(trigger);
+        // Toggle the current one
+        container.classList.toggle('is-open');
+
+        // Close any other open dropdowns
+        document.querySelectorAll('.dropdown.is-open').forEach(openDropdown => {
+            if (openDropdown !== container) {
+                openDropdown.classList.remove('is-open');
+            }
+        });
+        return;
+    }
+
+    // Handle clicking outside (if the click is NOT inside an open dropdown)
+    if (!container) {
+        document.querySelectorAll('.dropdown.is-open').forEach(openDropdown => {
+            openDropdown.classList.remove('is-open');
+        });
+    }
+});
 
 window.showFullContent = function (postId) {
     // Instead of passing the whole string, we'll find the element
@@ -382,11 +411,16 @@ window.createPostOverlay = function (postType = 'user', departmentId = null) {
         }
 
         files.forEach(file => {
-            selectedFiles.push(file);
+            selectedFiles.unshift(file);
+
+            // Create container immediately at the top to preserve descending order
+            const imgContainer = document.createElement('div');
+            imgContainer.style.position = 'relative';
+            imgContainer.innerHTML = `<div class="preview-loading" style="width: 100%; height: 80px; background: var(--input-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 10px;">LOADING</div>`;
+            previewGrid.prepend(imgContainer);
+
             const reader = new FileReader();
             reader.onload = (event) => {
-                const imgContainer = document.createElement('div');
-                imgContainer.style.position = 'relative';
                 imgContainer.innerHTML = `
                     <img src="${event.target.result}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;">
                     <div class="remove-img" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;">&times;</div>
@@ -396,8 +430,6 @@ window.createPostOverlay = function (postType = 'user', departmentId = null) {
                     selectedFiles = selectedFiles.filter(f => f !== file);
                     imgContainer.remove();
                 };
-
-                previewGrid.appendChild(imgContainer);
             };
             reader.readAsDataURL(file);
         });
@@ -440,14 +472,11 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
     try {
         console.log("Starting upload...");
 
-        const imageUrls = [];
-
-        // Upload all selected images (Max 5)
-        for (const file of selectedFiles) {
+        // Upload all selected images in parallel but maintain order (Max 5)
+        const imageUrls = await Promise.all(selectedFiles.map(async (file) => {
             const compressedBlob = await window.compressImage(file, { quality: 0.7 });
-            const url = await uploadPostImage(compressedBlob, file.name);
-            imageUrls.push(url);
-        }
+            return await uploadPostImage(compressedBlob, file.name);
+        }));
 
         if (postType === 'dept') {
             const deptPostData = {
@@ -467,32 +496,36 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
                 .insert([deptPostData])
 
             if (error) throw error;
-            return
+        } else {
+            const postData = {
+                content: content,
+                author_id: user.id,
+                image_1: imageUrls[0] || null,
+                image_2: imageUrls[1] || null,
+                image_3: imageUrls[2] || null,
+                image_4: imageUrls[3] || null,
+                image_5: imageUrls[4] || null
+            };
+
+            const { error } = await window.supabaseClient
+                .from('user_posts')
+                .insert([postData]);
+
+            if (error) throw error;
         }
-
-        const postData = {
-            content: content,
-            author_id: user.id,
-            image_1: imageUrls[0] || null,
-            image_2: imageUrls[1] || null,
-            image_3: imageUrls[2] || null,
-            image_4: imageUrls[3] || null,
-            image_5: imageUrls[4] || null
-        };
-
-        const { error } = await window.supabaseClient
-            .from('user_posts')
-            .insert([postData]);
-
-        if (error) throw error;
 
         window.openAlert('success', "Posted successfully!");
         // Refresh feed if function exists
-        if (typeof window.renderSocialFeed === 'function') window.renderSocialFeed();
+        if (typeof window.renderSocialFeed === 'function') {
+            window.renderSocialFeed();
+        } else if (typeof window.initDepartment === 'function') {
+            // If on department page, refresh posts
+            window.initDepartment();
+        }
 
     } catch (err) {
         console.error("Submission failed:", err.message);
-        window.openAlert('caution', ("Error: " + err.message, '\n Please try again.'));
+        window.openAlert('caution', "Error: " + err.message + "\nPlease try again.");
     }
 };
 
@@ -970,7 +1003,7 @@ window.openChat = async function (e) {
 
 
     overlay.innerHTML = `
-        <div class="post-modal-card chat" style="min-width: 95vw; min-height:95vh; max-width: 95vw;">
+        <div class="post-modal-card chat mobile-view-list" id="chat-modal-card" style="min-width: 95vw; min-height:95vh; max-width: 95vw;">
             <!-- Left Navigation Sidebar - Simplified -->
 
             <!-- Middle Chat List Sidebar -->
@@ -995,6 +1028,7 @@ window.openChat = async function (e) {
             <!-- Main Chat Area -->
             <div class="main-chats-container" id="main-chats-container">
                 <div class="chat-header">
+                    <button class="chat-back-btn" id="chat-back-to-list" style="display: none; background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 0 10px;">←</button>
                     <div class="chat-header-user">
                         <div id="active-chat-avatar" style="width: 40px; height: 40px; background: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--inverted-text-color); position: relative;">
                             ?
@@ -1028,6 +1062,10 @@ window.openChat = async function (e) {
 
             <!-- Right Sidebar Info -->
             <aside class="right-sidebar-info hidden" id="chat-info-sidebar">
+                <div class="info-header-mobile" style="display: none; align-items: center; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <button id="info-back-to-chat" style="background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 0 10px 0 0;">←</button>
+                    <h3 style="margin: 0; font-size: 1.1rem;">Chat Info</h3>
+                </div>
                 <div class="info-profile-section">
                     <div class="info-avatar-large" id="info-room-avatar">?</div>
                     <div class="info-room-name" id="info-room-name">Chat Name</div>
@@ -1065,6 +1103,23 @@ window.openChat = async function (e) {
     // Listeners
     document.getElementById('open-create-chat').onclick = () => window.showCreateChatUI();
     document.getElementById('info-btn').onclick = () => window.toggleInfoSidebar();
+
+    // Mobile Back Buttons
+    const backToList = document.getElementById('chat-back-to-list');
+    if (backToList) {
+        backToList.onclick = () => {
+            const card = document.getElementById('chat-modal-card');
+            card.classList.remove('mobile-view-chat');
+            card.classList.add('mobile-view-list');
+        };
+    }
+
+    const backToChat = document.getElementById('info-back-to-chat');
+    if (backToChat) {
+        backToChat.onclick = () => {
+            window.toggleInfoSidebar();
+        };
+    }
 
     document.getElementById('change-chat-name-btn').onclick = () => window.changeChatName();
     document.getElementById('change-chat-photo-btn').onclick = () => window.changeChatPhoto();
@@ -1109,8 +1164,14 @@ window.toggleInfoSidebar = function () {
     const sidebar = document.getElementById('chat-info-sidebar');
     if (!sidebar) return;
 
+    const card = document.getElementById('chat-modal-card');
     sidebar.classList.toggle('hidden');
+    
     if (!sidebar.classList.contains('hidden')) {
+        if (card) {
+            card.classList.remove('mobile-view-chat');
+            card.classList.add('mobile-view-info');
+        }
         const roomId = window.currentChatRoomId;
         const roomName = document.getElementById('active-chat-name').textContent;
         // Grab the photo we saved globally in loadConversation
@@ -1118,6 +1179,11 @@ window.toggleInfoSidebar = function () {
 
         if (roomId && roomName !== 'Select a chat') {
             window.renderChatInfo(roomId, roomName, profilePicture);
+        }
+    } else {
+        if (card) {
+            card.classList.remove('mobile-view-info');
+            card.classList.add('mobile-view-chat');
         }
     }
 };
@@ -1215,6 +1281,12 @@ window.changeChatPhoto = function () {
 window.loadConversation = async function (roomId, roomName, profilePicture, element) {
     document.querySelectorAll('.chat-preview').forEach(el => el.classList.remove('active'));
     if (element) element.classList.add('active');
+
+    const card = document.getElementById('chat-modal-card');
+    if (card) {
+        card.classList.remove('mobile-view-list');
+        card.classList.add('mobile-view-chat');
+    }
 
     const chatInput = document.getElementById('chat-message-input');
     if (chatInput) {

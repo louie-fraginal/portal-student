@@ -1,0 +1,170 @@
+/* resources/css-modular/components/dropdown.css */
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: 32px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-trigger {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-trigger svg, 
+.dropdown-trigger polyline {
+    pointer-events: none;
+}
+
+.dropdown-trigger:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    padding: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 260px);
+    gap: 32px;
+    margin-top: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+}
+
+/* Ensure dropdown doesn't go off-screen if near right edge */
+.dropdown-menu.right-aligned {
+    left: auto;
+    right: 0;
+}
+
+.dropdown.is-open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dropdown-header {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    padding-left: 12px;
+}
+
+.dropdown-item {
+    display: flex;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    align-items: flex-start;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-icon {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-primary);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.dropdown-item:hover .dropdown-icon {
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: var(--accent-primary);
+}
+
+.dropdown-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dropdown-title {
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.dropdown-desc {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Arrow indicator in trigger */
+.dropdown-trigger svg.chevron {
+    transition: transform 0.3s ease;
+    opacity: 0.6;
+}
+
+.dropdown:hover .dropdown-trigger svg.chevron,
+.dropdown.is-open .dropdown-trigger svg.chevron {
+    transform: rotate(180deg);
+}
+
+.dropdown.is-open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown.is-open .dropdown-trigger svg.chevron {
+    transform: rotate(180deg);
+}
+
+/* Dark mode specific fine-tuning */
+body.dark-mode .dropdown-menu {
+    background-color: #101010;
+    border-color: #30363d;
+}
+
+body.dark-mode .dropdown-icon {
+    background-color: #161616;
+}

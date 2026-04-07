@@ -72,29 +72,24 @@ async function fetchRecents() {
 function renderNotices(notices) {
     const container = document.getElementById('announcements-container');
     if (!container) return; 
-    
+
     container.innerHTML = ''; 
 
     notices.forEach(notice => {
         const deptInfo = window.DEPT_MAP[notice.department_key] || { color: '#94a3b8' };
         const color = deptInfo.color;
         const images = [notice.image_url].filter(img => img); 
-        
+
         const item = document.createElement('div');
         item.className = 'notice-item';
         item.id = 'notice-item-' + notice.id;
 
         const button = document.createElement('button');
         button.innerHTML = `
-            <small style="color: ${color}; font-weight: 700;">${notice.department_key || 'OFFICIAL'}</small>
-            <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: var(--text-main)">${window.checkStringLength(notice.content, 50)}</p>
+            <small class="notice-dept-tag" style="color: ${color};">${notice.department_key || 'OFFICIAL'}</small>
+            <p class="notice-text-preview">${window.checkStringLength(notice.content, 50)}</p>
         `;
 
-        button.style.cssText = `
-            display: block; background: transparent; border: none; text-align: left; 
-            padding: 0; width: 100%; cursor: pointer; font-family: inherit;
-        `;
-        
         button.addEventListener('click', (e) => {
             e.preventDefault();
             window.openPostModal(notice, images, true);
@@ -120,18 +115,14 @@ function renderClubs(clubs) {
     clubs.forEach(club => {
         const deptId = nameToId[club.text] || 'JPIA';
         const color = window.DEPT_MAP[deptId]?.color || '#d8d8d8';
-        
+
         const button = document.createElement('button');
         button.className = "department-button tag";
-        button.style.cssText = `
-            cursor: pointer; padding: 8px 15px; background: ${color};
-            color: #ffffff; border: none; border-radius: 20px; 
-            font-size: 0.7rem; font-weight: 600; transition: all 0.2s ease;
-        `;
-        
+        button.style.backgroundColor = color;
+
         button.textContent = club.text;
         button.onclick = () => window.location.href = `department.html?dept=${deptId}`;
-        
+
         container.appendChild(button);
     });
 }
@@ -139,9 +130,9 @@ function renderClubs(clubs) {
 function renderRecents(recents) {
     const container = document.getElementById('events-area-container');
     if (!container) return;
-    
+
     if (!recents || recents.length === 0) {
-        container.innerHTML = `<p style="padding:20px; color:#999;">No recent updates.</p>`;
+        container.innerHTML = `<p class="no-data-msg">No recent updates.</p>`;
         return;
     }
 
@@ -155,9 +146,9 @@ function renderRecents(recents) {
         slide.innerHTML = `
             <img src='${item.image_1}' class="events-bg">
             <div class="hero-content">
-                <span class="tag" style="opacity:0.8;">Recently</span>
-                <h3 style="margin: 5px 0; color: white;">${item.department}</h3>
-                <p style="opacity: 0.7; font-size: 0.8rem;">${new Date(item.date).toLocaleDateString()}</p>
+                <span class="tag hero-tag-recently">Recently</span>
+                <h3 class="hero-dept-title">${item.department}</h3>
+                <p class="hero-date">${new Date(item.date).toLocaleDateString()}</p>
             </div>`;
         track.appendChild(slide);
     });
@@ -185,8 +176,8 @@ function renderEvents(events) {
             <img src="${event.image_url || '../images/wickedbackground(1).svg'}" class="hero-bg" alt="${event.header}">
             <div class="hero-content">
                 <span class="tag">Featured</span>
-                <h2 style="font-size: 2.2rem; margin: 10px 0; color: white;">${event.header}</h2>
-                <p style="opacity: 0.9; margin: 0; color: rgba(255,255,255,0.9); font-size: 1.1rem; max-width: 600px;">${event.subheader}</p>
+                <h2 class="hero-header">${event.header}</h2>
+                <p class="hero-subheader">${event.subheader}</p>
             </div>
         `;
         track.appendChild(slide);
@@ -233,19 +224,14 @@ function showPopUpAnnouncement(title, message, data) {
     if (!container) return;
 
     const toast = document.createElement('div');
-    const deptColor = window.DEPT_MAP[data.department]?.color || 'var(--accent-primary)';
-    
-    toast.style.cssText = `
-        background: var(--card-bg); color: var(--text-main); padding: 15px 20px;
-        border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        border-left: 4px solid ${deptColor}; backdrop-filter: blur(10px);
-        transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        max-width: 300px; text-align: left; cursor: pointer;
-    `;
-    
+    const deptColor = window.DEPT_MAP[data.department_key]?.color || 'var(--accent-primary)';
+
+    toast.className = 'toast-card';
+    toast.style.borderLeftColor = deptColor;
+
     toast.innerHTML = `
-        <strong style="display: block; margin-bottom: 5px; font-size: 0.95rem;">📢 ${title}</strong>
-        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">${window.checkStringLength(message, 40)}</p>
+        <strong class="toast-title">📢 ${title}</strong>
+        <p class="toast-msg">${window.checkStringLength(message, 40)}</p>
     `;
 
     toast.onclick = () => {
@@ -261,6 +247,5 @@ function showPopUpAnnouncement(title, message, data) {
         setTimeout(() => toast.remove(), 300);
     }, 6000);
 }
-
 init();
 setupSubscriptions();

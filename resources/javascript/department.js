@@ -98,7 +98,7 @@ function renderPosts(posts, deptId) {
     grid.innerHTML = '';
 
     if (posts.length === 0) {
-        grid.innerHTML = '<p style="grid-column: span 3; text-align: center; padding: 40px; color: var(--text-muted);">No posts available for this department yet.</p>';
+        grid.innerHTML = '<p class="no-posts-msg">No posts available for this department yet.</p>';
         return;
     }
 
@@ -106,7 +106,6 @@ function renderPosts(posts, deptId) {
         const card = document.createElement('div');
         card.className = 'post-card-bento';
         card.style.transitionDelay = `${(index % 3) * 0.1}s`;
-        card.style.cursor = 'pointer';
 
         card.addEventListener('click', () => {
             // Use the unified modal from ui-util.js
@@ -115,13 +114,13 @@ function renderPosts(posts, deptId) {
 
         card.innerHTML = `
             ${post.cover_photo ? `<img src="${post.cover_photo}" class="post-card-image" alt="${post.title}">` : ''}
-            <div style="padding: 5px 0;">
+            <div class="post-card-body">
                 <h2 class="post-card-title">${post.title}</h2>
                 <p class="post-card-text">${post.content}</p>
             </div>
             <div class="post-card-footer">
                 <span>${post.date}</span>
-                <span style="opacity: 0.6;">Read More →</span>
+                <span class="read-more-tag">Read More →</span>
             </div>
         `;
 
