@@ -1078,9 +1078,10 @@ window.openChat = async function (e) {
                             <div class="chat-info-dropdown-item" id="change-chat-name-btn">
                                 <span>✏️</span> Change Name
                             </div>
-                            <div class="chat-info-dropdown-item" id="change-chat-photo-btn">
+                            <div class="chat-info-dropdown-item" id="change-chat-photo-btn"}">
                                 <span>📸</span> Change Photo
                             </div>
+                            <input id="change-room-photo" type="file" accept="image/*" onclick="">
                         </div>
                     </div>
                 </div>
@@ -1303,6 +1304,7 @@ window.changeChatName = async function () {
                 // Refresh chat list to update name there
                 if (window.currentUser) {
                     window.renderChatList(window.currentUser);
+                    window.loadConversation(roomId, trimmedName, window.currentChatRoomPhoto);
                 }
 
                 window.openAlert('success', "Chat name updated!");
@@ -1315,8 +1317,43 @@ window.changeChatName = async function () {
     }
 };
 
-window.changeChatPhoto = function () {
-    window.openAlert('caution', "Chat photo updates will be available soon in the next update!");
+window.changeChatPhoto = async function () {
+    const roomId = window.currentChatRoomId;
+    if (!roomId) return;
+    const imageInput = document.getElementById('change-room-photo')
+    const roomName = document.getElementById('active-chat-name').textContent;
+
+
+    imageInput.click();
+
+    imageInput.onchange = async (e) => {
+        const image = e.target.files[0]
+        if (!image) return;
+
+        try {
+            // Upload to supabase
+            const imageUrl = await uploadPostImage(image, image.name);
+
+
+            const { data, error, count } = await window.supabaseClient
+                .from('chat_room')
+                .update({ profile_picture: imageUrl })
+                .eq('id', roomId)
+                .select();
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                window.openAlert('success', 'Photo Updated!')
+                window.renderChatList(window.currentUser);
+                window.renderChatInfo(roomId, roomName, imageUrl); 
+            }
+
+        } catch (err) {
+
+        }
+    }
+
 };
 
 window.loadConversation = async function (roomId, roomName, profilePicture, element) {

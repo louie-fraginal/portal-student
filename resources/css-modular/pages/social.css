@@ -325,6 +325,10 @@ aside::-webkit-scrollbar {
     border: 1px solid var(--border-color);
 }
 
+#change-room-photo {
+    display:none;
+}
+
 /* Responsive */
 @media (max-width: 1100px) {
     .v2-wrapper {
