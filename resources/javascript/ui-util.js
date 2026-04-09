@@ -1453,30 +1453,8 @@ async function submitChatMessage(text, roomId) {
     if (error) {
         console.error("failed to save message: ", error);
     }
-
-
-    // THIS IS BEFORE POSTGRES_CHANGES REFRACTOR
-    // appendSingleMessage(newMsg, user.id);
-
-    // if (window.chatChannel) {
-    //     window.chatChannel.send({
-    //         type: 'broadcast',
-    //         event: 'new_message',
-    //         payload: newMsg
-    //     });
-    // }
-
-    // window.supabaseClient
-    //     .from('message')
-    //     .insert({
-    //         id: tempId,
-    //         chat_room_id: roomId,
-    //         author_id: user.id,
-    //         text: text.trim()
-    //     }).then(({ error }) => {
-    //         if (error) console.error("Failed to save message: ", error);
-    //     });
 }
+
 
 window.renderedMessagesIds = new Set();
 
@@ -1501,7 +1479,7 @@ function subscribeToRoom(roomId, currentUserId) {
 
                 // Deduplication check
                 // Prevents the sender from seeing their own message
-                // Minutes wasted: 30 minutes
+                // Minutes wasted: 5 hours
                 console.log(payload.new)
 
                 if (!window.renderedMessagesIds.has(newMessage.id)) {
@@ -1517,16 +1495,4 @@ function subscribeToRoom(roomId, currentUserId) {
             }
         )
         .subscribe();
-
-    // window.chatChannel = window.supabaseClient
-    //     .channel(`room-${roomId}`)
-    //     .on('broadcast', { event: 'new_message' }, (payload) => {
-    //         const newMessage = payload.payload
-
-    //         if (!window.renderedMessagesIds.has(newMessage.id)) {
-    //             window.renderedMessagesIds.add(newMessage.id);
-    //             appendSingleMessage(newMessage, currentUserId);
-    //         }
-    //     })
-    //     .subscribe();
 }
