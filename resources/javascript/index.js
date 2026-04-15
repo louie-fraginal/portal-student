@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // ========== FETCH PROFILE DATA ==========
     const { data: profile, error: profileError } = await window.supabaseClient
         .from('profiles')
-        .select('full_name')
+        .select('*')
         .eq('id', session.user.id)
         .single();
 

@@ -17,7 +17,6 @@
     background-size: cover;
     background-position: center;
     margin-bottom: 20px;
-    background-image: url('../images/wickedbackground(1).svg');
 }
 
 .profile-header::after {
@@ -37,10 +36,20 @@
     gap: 24px;
 }
 
+.cover-photo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .profile-avatar {
     width: 120px;
     height: 120px;
-    border-radius: 32px;
+    border-radius: 50%;
     background: var(--profile-color-light);
     color: var(--profile-color);
     font-size: 3rem;
@@ -110,7 +119,7 @@
     transform: translateY(0);
 }
 
-.post-card-bento:hover {
+.post-card-bento:hover, .cover-photo:hover {
     transform: translateY(-10px) scale(1.02);
     box-shadow: var(--shadow-hover);
     border-color: var(--profile-color);
@@ -165,9 +174,11 @@
     font-size: 1.2rem;
 }
 
-#fileSelect {
+#fileSelect, #headerSelect {
     display: none;
 }
+
+
 
 @media (max-width: 1100px) {
     .posts-grid {

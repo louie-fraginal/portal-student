@@ -42,7 +42,7 @@ window.openAlert = async function (type, text) {
             <h3 class="alert-text">${text}</h3>
             <p class="alert-muted">This pop-up will close in a bit.</p>
         </div>
-    `
+    `;
 
     overlay.onclick = (e) => {
         if (e.target === overlay || e.target.classList.contains('close-btn')) overlay.remove();
@@ -576,7 +576,7 @@ function escapeHTML(str) {
 
 // 2. Extracted Supabase Storage Logic
 async function uploadPostImage(blob, fileName) {
-    const bucket = 'images'; // Ensure this matches your Supabase bucket name
+    const bucket = 'images';
     const filePath = `social/${Date.now()}_${fileName.replace(/[^a-zA-Z0-9.]/g, '_')}`;
 
     const { data: buckets, error: bucketError } = await window.supabaseClient.storage.listBuckets();
@@ -739,6 +739,7 @@ async function renderMessages(messages, currentUserId, currentName) {
     const container = document.querySelector('.messages-wrapper');
     if (!container) return;
 
+
     console.log(currentName)
 
     if (!messages || messages.length === 0) {
@@ -746,41 +747,45 @@ async function renderMessages(messages, currentUserId, currentName) {
         return;
     }
 
-    container.innerHTML = messages.map(msg => {
+    const processedMessages = await Promise.all(messages.map(msg => {
         const isMe = msg.author_id === currentUserId;
         const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+        const { text, gif } = parseMessageContent(msg.text);
         return `
             <div class="message-bubble-wrapper ${isMe ? 'is-me' : ''}">
                 <span class="chat-username">${msg.profiles?.full_name || ''}</span>
                 <div class="message-bubble">
-                    ${msg.text}
+                    ${text ? text : ''}
+                    ${gif && gif.length > 0 ? gif.map(url => `<img src="${url}" class="chat-gif-embed" />`).join('') : ''}
                 </div>
                 <div class="message-meta">
                     ${time} ${isMe ? '✓' : ''}
                 </div>
             </div>
         `;
-    }).join('');
+    }));
+
+    container.innerHTML = processedMessages.join('');
 
     setTimeout(() => container.scrollTop = container.scrollHeight, 10);
 }
 
-function appendSingleMessage(msg, currentUserId) {
+async function appendSingleMessage(msg, currentUserId) {
     const container = document.querySelector('.messages-wrapper');
     if (!container) return;
-
     if (container.innerHTML.includes('No messages yet')) container.innerHTML = '';
 
     const isMe = msg.author_id === currentUserId;
     const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const safeText = escapeHTML(msg.text)
+    const { text, gifs } = await parseMessageContent(msg.text);
     const msgHTML = `
         <div class="message-bubble-wrapper ${isMe ? 'is-me' : ''}">
             <span class="chat-username">${msg?.profiles.full_name || ''}</span>
             <div class="message-bubble">
-                ${safeText}
+                ${text ? text : ''}
+                ${gifs ? gifs.map(url => `<img src="${url}" class="chat-gif-embed" alt="${url}" />`).join('') : ''}            
             </div>
             <div class="message-meta">
                 ${time} ${isMe ? '✓' : ''}
@@ -1011,13 +1016,12 @@ window.openChat = async function (e) {
                 <div class="chat-list-header">
                     <h2>My Chats <button class="create-chat-btn" id="open-create-chat">+</button></h2>
                     <div class="search-container">
-                        <input type="text" id="chat-search-input" placeholder="Search chats...">
+                        <input type="text" id="chat-search-input" placeholder="Search chats..." onInput="searchConversation()">
                     </div>
                 </div>
                 
                 <div class="chat-tabs">
                     <div class="chat-tab active">All Messages</div>
-                    <div class="chat-tab">Unread</div>
                 </div>
 
                 <div class="chat-previews" id="chat-previews-list">
@@ -1159,6 +1163,22 @@ window.openChat = async function (e) {
 
     // Initial Load
     window.renderChatList(user);
+}
+
+function searchConversation() {
+    const searchInput = document.getElementById('chat-search-input').value.toLowerCase();
+    const chats = document.querySelectorAll('.chat-preview')
+
+    chats.forEach((chat) => {
+        const chatName = chat.querySelector('.chat-name').textContent.toLowerCase();
+        
+        if (chatName.includes(searchInput)) {
+            chat.style.display = 'flex';
+        } else {
+            chat.style.display = 'none';
+        }
+    });
+
 }
 
 window.toggleInfoSidebar = function () {
@@ -1346,7 +1366,7 @@ window.changeChatPhoto = async function () {
             if (data && data.length > 0) {
                 window.openAlert('success', 'Photo Updated!')
                 window.renderChatList(window.currentUser);
-                window.renderChatInfo(roomId, roomName, imageUrl); 
+                window.renderChatInfo(roomId, roomName, imageUrl);
             }
 
         } catch (err) {
@@ -1418,6 +1438,30 @@ window.loadConversation = async function (roomId, roomName, profilePicture, elem
     if (typeof subscribeToRoom === 'function') subscribeToRoom(roomId, window.currentUserId);
 };
 
+function findGifLinks(text) {
+    if (!text) return [];
+    const gifRegex = /https?:\/\/\S+\.(?:gif|webp|jpg|png)(?:\?[^\s]*)?/gi;
+    const matches = text.match(gifRegex) || [];
+    console.log("Regex Found Links:", matches); // Debug log 1
+    return matches;
+}
+
+function parseMessageContent(text) {
+    const links = findGifLinks(text.trim());
+    let cleanText = text;
+
+    links.forEach(link => {
+        cleanText = cleanText.replace(link, "");
+    });
+
+    console.log(cleanText.trim(), links[0])
+
+    return {
+        text: escapeHTML(cleanText.trim()),
+        gif: links
+    }
+}
+
 async function submitChatMessage(text, roomId) {
     if (!text.trim()) return;
 
@@ -1425,6 +1469,7 @@ async function submitChatMessage(text, roomId) {
     if (!user) return alert("Log in to chat!");
 
     const tempId = window.crypto.randomUUID();
+
 
     const newMsg = {
         id: tempId,
@@ -1496,3 +1541,4 @@ function subscribeToRoom(roomId, currentUserId) {
         )
         .subscribe();
 }
+

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMS Dashboard</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/pages/dashboard.css">
+    <!-- Chart.js for Sparklines and Donut -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="dark">
+    <aside class="sidebar">
+        <div class="sidebar-title">Inventory Management System</div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="sidebar-item active">Dashboard</a>
+            <a href="inventory.html" class="sidebar-item">Inventory</a>
+            <a href="purchases.html" class="sidebar-item">Purchases</a>
+            <a href="sales.html" class="sidebar-item">Sales</a>
+            <a href="transactions.html" class="sidebar-item">Transactions</a>
+        </nav>
+    </aside>
+    <main>
+        <div class="dashboard-header">
+            <h1>IMS Executive Dashboard</h1>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Sales (2x1 Hero Card) -->
+            <div class="card area-sales">
+                <div class="sales-content">
+                    <div class="card-title text-primary">Revenue & Spend</div>
+                    <div style="display: flex; gap: 4rem; align-items: baseline;">
+                        <div>
+                            <label>Total Revenue (Sales)</label>
+                            <div id="total-revenue" class="stat-value-lg" style="font-size: 2.5rem; margin-bottom: 0.25rem; color: var(--chart-2);">₱0.00</div>
+                        </div>
+                        <div>
+                            <label>Total Spend (Purchases)</label>
+                            <div id="total-spend" class="stat-value-lg" style="font-size: 2.5rem; margin-bottom: 0.25rem; color: var(--destructive);">₱0.00</div>
+                        </div>
+                    </div>
+                    <div class="trend-indicator trend-up" id="sales-trend-text">↑ 0% from last week</div>
+                    <label style="display: block; margin-top: 1rem;">Available Stock</label>
+                    <div id="stock-remaining" class="stat-value">0 units</div>
+                </div>
+                <div class="sparkline-container">
+                    <canvas id="salesSparkline"></canvas>
+                </div>
+            </div>
+
+            <!-- Purchases (1x1 Square) -->
+            <div class="card area-purchases">
+                <div class="card-title text-destructive" style="margin-bottom: 0.5rem;">Purchases</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 1rem;">Recent Cost Trends</div>
+                <div style="height: 60px;">
+                    <canvas id="purchasesMiniBar"></canvas>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <label>Recent Batch</label>
+                    <div id="recent-batch-number" class="stat-value">N/A</div>
+                </div>
+            </div>
+
+            <!-- Stock Alert (1x1 Square) -->
+            <div class="card area-alert" style="text-align: center; border-color: var(--destructive);">
+                <div class="card-title text-destructive">Stock Alert</div>
+                <div class="alert-value text-destructive" id="low-stock-items">0</div>
+                <div class="pulse-icon text-destructive" style="margin-top: 0.5rem; font-weight: 700; font-size: 0.75rem;">
+                    LOW STOCK
+                </div>
+                <div style="margin-top: 1rem;">
+                    <a href="inventory.html" class="btn btn-sm btn-destructive">Refill Now</a>
+                </div>
+            </div>
+
+            <!-- Inventory (1x2 Verticalish - but grid area inventory inventory) -->
+            <div class="card area-inventory">
+                <div class="card-title text-chart-1">Top Inventory Items</div>
+                <div id="top-inventory-list" class="recent-activity-container" style="margin-top: 1rem;">
+                    <!-- Dynamic Progress Bars -->
+                    <div style="text-align:center; padding: 2rem; opacity: 0.5;">Loading inventory levels...</div>
+                </div>
+                <a href="inventory.html" class="btn btn-sm btn-secondary btn-view-table" style="width: 100%;">Complete Inventory Table</a>
+            </div>
+
+            <!-- Inventory Summary (2x1 Area summary summary) -->
+            <div class="card area-summary">
+                <div class="card-title">Stock Summary</div>
+                <div class="card-grid">
+                    <div>
+                        <label>Quantity In-Hand</label>
+                        <div id="qty-in-hand" class="stat-value-lg">0</div>
+                        <div class="progress-container">
+                            <div id="total-stock-progress" class="progress-bar progress-high" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label>To Be Received</label>
+                        <div id="qty-to-be-received" class="stat-value-lg">0</div>
+                        <div class="progress-container">
+                            <div id="pending-stock-progress" class="progress-bar progress-medium" style="width: 30%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; font-size: 0.875rem; opacity: 0.8;">
+                    <strong>Recent Activity Log:</strong>
+                    <ul id="recent-activity-list" class="recent-activity-list" style="margin-top: 0.5rem; height: 60px; overflow: hidden;">
+                        <!-- Dynamic -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Product Details (2x1 Area details details) -->
+            <div class="card area-details">
+                <div class="card-title">Stock Health Distribution</div>
+                <div class="details-flex">
+                    <div class="chart-container">
+                        <canvas id="healthDonut"></canvas>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="width: 12px; height: 12px; background: var(--chart-2); border-radius: 2px; margin-right: 8px;"></div>
+                            <span style="font-size: 0.875rem;">Healthy Stock: <strong id="healthy-count">0</strong></span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="width: 12px; height: 12px; background: var(--destructive); border-radius: 2px; margin-right: 8px;"></div>
+                            <span style="font-size: 0.875rem;">Low Stock: <strong id="low-stock-count-detail">0</strong></span>
+                        </div>
+                        <div style="margin-top: 1rem; font-size: 0.75rem; opacity: 0.7;">
+                            Based on individual Product min stock levels.
+                        </div>
+                    </div>
+                    <div style="margin-left: auto; text-align: right;">
+                        <label>Total Product Types</label>
+                        <div id="all-items-quantity" class="stat-value-lg">0 types</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System (1x1 Area system system - but we will make it 2 squares wide or combine) -->
+            <div class="card area-system status-card">
+                <div class="card-title">System & Connectivity</div>
+                <div class="status-info">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div>
+                            <span class="status-dot syncing"></span>
+                            <span style="font-weight: 600;">MySQL Connected</span>
+                        </div>
+                        <div style="font-size: 0.75rem; opacity: 0.7;">v8.0.x</div>
+                    </div>
+                    <p style="margin-bottom: 0.5rem;">Syncing inventory telemetry...</p>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 1rem;">
+                        <span>Last Successful Sync:</span>
+                        <strong id="last-sync-time">Just now</strong>
+                    </div>
+                    <div id="system-status-msg" class="status-message">
+                        Engine Status: Operational
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+
+<!--
+Admin Dashboard: 
+- Total Users: <user count>
+- Total Posts: <all post count>
+- Total Chat Messages: <Chat messages count>
+- Post Trend: <chart of overall posts>
+
+Another tab for Posts: 
+Pending Posts: 
+Accepted Posts: 
+Rejected Posts: 
+
+Another tab for Reports: 
+Reported messages: <user, message itself>
+Reported Posts: <user, posts itself>
+Reported Comments: <user, comment itself>
+
+Another tab for Timeline: 
+Timeline of recent posts, comments, reports. 
+-->

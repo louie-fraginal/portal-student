@@ -403,6 +403,38 @@ body.dark-mode .chat-input-wrapper {
     color: var(--text-main);
 }
 
+.chat-gif-embed {
+    display: block;
+    max-width: 300px;         /* Prevents GIFs from being too huge */
+    max-height: 250px;        /* Keeps vertical chat flow manageable */
+    width: auto;
+    height: auto;
+    border-radius: 12px;      /* Matches the Bento/Modern aesthetic */
+    margin-top: 8px;          /* Separates text from the GIF */
+    object-fit: cover;        /* Ensures it looks good if you force height */
+    
+    /* Neumorphic/Elevated look */
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    
+    /* Performance & Loading */
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+/* Subtle hover effect for your OLED screen */
+.chat-gif-embed:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+}
+
+/* Important: prevent "jumping" while loading */
+.chat-gif-embed:not([src]) {
+    background: #1e293b; /* A dark slate placeholder */
+    min-width: 200px;
+    min-height: 150px;
+}
+
 .create-chat-btn {
     background: var(--accent-primary);
     color: var(--inverted-text-color);

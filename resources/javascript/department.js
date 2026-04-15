@@ -16,13 +16,14 @@ async function initDepartment() {
     document.documentElement.style.setProperty('--dept-color', dept.color);
     document.documentElement.style.setProperty('--dept-color-light', `${dept.color}22`);
 
-    // Update UI elements
+    // Get UI elements
     const deptBadge = document.getElementById('dept-badge');
     const deptName = document.getElementById('dept-name');
     const deptIntro = document.getElementById('dept-intro');
     const deptHeader = document.getElementById('dept-header');
     const deptLink = document.getElementById('dept-link');
 
+    // Set UI elements
     if (deptBadge) deptBadge.textContent = dept.shortName;
     if (deptName) deptName.textContent = dept.name;
     if (deptIntro) deptIntro.textContent = dept.intro;
@@ -57,6 +58,7 @@ async function fetchDepartmentPosts(deptId) {
         if (error) console.error('Error fetching notices:', error);
 
         console.log(data);
+        
         // Map notices to a common post format for rendering
         return (data || []).map(notice => ({
             id: notice.id,

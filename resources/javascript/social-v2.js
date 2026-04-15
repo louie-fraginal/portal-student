@@ -51,20 +51,41 @@ async function initSocial() {
 
     console.log("Initializing Social V2...");
 
-    // 1. Handle User Profile Header
-    const profileName = window.profile ? window.profile.full_name : 'Student';
+    // Handle User Profile Header
+    const profile = window.profile
     const userInitial = document.getElementById('user-initial');
+    const userCoverPhoto = document.getElementById('user-cover-photo');
     const userFirstName = document.getElementById('user-firstname');
     const userFullName = document.getElementById('user-fullname');
 
-    if (userInitial) userInitial.textContent = profileName.charAt(0);
-    if (userFirstName) userFirstName.textContent = profileName.split(' ')[0];
-    if (userFullName) userFullName.textContent = profileName;
+    // // Populate profile avatar
+    // if (profilePicture && profilePicture !== 'null' & profilePicture !== 'undefined') {
+    //     userInitial.innerHTML = `<img src="${profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+    // } else {
+    //     userInitial.textContent = profileName.charAt(0);
+    // }
 
-    // 2. Load Main Feed (Initial batch)
+    // // Load user details
+    // if (userFirstName) userFirstName.textContent = profileName.split(' ')[0];
+    // if (userFullName) userFullName.textContent = profileName;
+
+    if (profile) {
+        if (profile.profile_picture) {
+            console.log('yes')
+            userInitial.innerHTML = `<img src="${profile.profile_picture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        } else {
+            userInitial.textContent = profile.full_name.charAt(0);
+        }
+        if (profile.cover_photo) {
+            userCoverPhoto.src = profile.cover_photo;
+        }
+        if (userFirstName) userFirstName.textContent = profile.full_name.split(' ')[0];
+        if (userFullName) userFullName.textContent = profile.full_name;
+    }
+
+    // Load Main Feed (Initial batch)
     await window.renderSocialFeed(true);
-
-    // 3. Setup infinite scroll after initial load
+    // Setup infinite scroll after initial load
     window.setupInfiniteScroll();
 }
 
@@ -91,7 +112,7 @@ window.renderSocialFeed = async function (isInitialLoad = true) {
         const to = from + POSTS_PER_PAGE - 1;
 
         const { data: feed, error } = await window.supabaseClient
-            .from('unified_social_feed')
+            .from('unified_social_feed_new')
             .select('*')
             .order('created_at', { ascending: false })
             .range(from, to);
@@ -113,33 +134,45 @@ window.renderSocialFeed = async function (isInitialLoad = true) {
         const userObj = window.currentUser || (await window.supabaseClient.auth.getUser()).data?.user;
         const currentUserId = userObj ? userObj.id : null;
 
+        // if (currentUserId && feed.length > 0) {
+        //     const deptPostIds = feed.filter(p => p.type === 'dept').map(p => p.id.toString());
+        //     const userPostIds = feed.filter(p => p.type === 'user').map(p => p.id.toString());
+
+        //     if (deptPostIds.length > 0) {
+        //         const { data: dLikes } = await window.supabaseClient
+        //             .from('post_likes')
+        //             .select('post_id')
+        //             .in('post_id', deptPostIds)
+        //             .eq('user_id', currentUserId);
+        //         deptLikes = dLikes ? dLikes.map(l => l.post_id.toString()) : [];
+        //     }
+
+        //     if (userPostIds.length > 0) {
+        //         const { data: uLikes } = await window.supabaseClient
+        //             .from('user_post_likes')
+        //             .select('post_id')
+        //             .in('post_id', userPostIds)
+        //             .eq('user_id', currentUserId);
+        //         userPostLikes = uLikes ? uLikes.map(l => l.post_id.toString()) : [];
+        //     }
+        // }
+
         if (currentUserId && feed.length > 0) {
-            const deptPostIds = feed.filter(p => p.type === 'dept').map(p => p.id.toString());
-            const userPostIds = feed.filter(p => p.type === 'user').map(p => p.id.toString());
+            const [deptLikes, userLikes] = await Promise.all([
+                window.supabaseClient.from('post_likes').select('post_id').eq('user_id', currentUserId),
+                window.supabaseClient.from('user_post_likes').select('post_id').eq('user_id', currentUserId)])
 
-            if (deptPostIds.length > 0) {
-                const { data: dLikes } = await window.supabaseClient
-                    .from('post_likes')
-                    .select('post_id')
-                    .in('post_id', deptPostIds)
-                    .eq('user_id', currentUserId);
-                deptLikes = dLikes ? dLikes.map(l => l.post_id.toString()) : [];
-            }
-
-            if (userPostIds.length > 0) {
-                const { data: uLikes } = await window.supabaseClient
-                    .from('user_post_likes')
-                    .select('post_id')
-                    .in('post_id', userPostIds)
-                    .eq('user_id', currentUserId);
-                userPostLikes = uLikes ? uLikes.map(l => l.post_id.toString()) : [];
-            }
+            likedIds = [
+                ...(deptLikes.data?.map(l => l.post_id.toString()) || []),
+                ...(userLikes.data?.map(l => l.post_id.toString()) || [])
+            ];
         }
 
         // Render posts
         feed.forEach(post => {
             post.timestamp = new Date(post.created_at);
-            const hasLiked = post.type === 'dept' ? deptLikes.includes(post.id.toString()) : userPostLikes.includes(post.id.toString());
+            // const hasLiked = post.type === 'dept' ? deptLikes.includes(post.id.toString()) : userPostLikes.includes(post.id.toString());
+            const hasLiked = likedIds.includes(post.id.toString());
             renderPostCard(post, feedContainer, hasLiked, currentUserId);
         });
 
@@ -164,6 +197,9 @@ function renderPostCard(post, container, hasLiked, userId) {
     const accentColor = window.DEPT_MAP[deptKey]?.color || 'var(--v2-green)';
     const isDept = post.type === 'dept';
     const authorName = isDept ? window.DEPT_MAP[deptKey].name : post.author_name || 'Student';
+    const avatarHtml = post.profile_picture 
+    ? `<img src="${post.profile_picture}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+    : authorName.charAt(0);
 
     postCard.style.setProperty('--post-accent', accentColor);
     const timeAgo = window.formatTimeAgo(post.timestamp);
@@ -176,7 +212,7 @@ function renderPostCard(post, container, hasLiked, userId) {
     postCard.innerHTML = `
         <div class="v2-post-header" ${headerClickAction}>
             <div class="v2-post-avatar" style="box-shadow: 0 0 10px ${accentColor}44; border-color: ${accentColor};">
-                ${authorName.substring(0, 1)}
+                ${avatarHtml}
             </div>
             <div class="v2-post-meta">
                 <div class="v2-author-name" style="${!isDept ? 'text-decoration: underline transparent; transition: text-decoration 0.2s;' : ''}" onmouseover="this.style.textDecoration='${!isDept ? 'underline' : 'none'}'" onmouseout="this.style.textDecoration='none'">${authorName}</div>
