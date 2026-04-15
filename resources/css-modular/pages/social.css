@@ -75,6 +75,56 @@ aside::-webkit-scrollbar {
     z-index: 2;
 }
 
+.v2-more-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+    /* Uses the high contrast text-muted from our WCAG focus */
+    color: var(--text-muted); 
+}
+
+.v2-more-btn:hover {
+    background-color: var(--post-accent);
+    color: var(--text-main);
+}
+
+.v2-post-more {
+    position: relative;
+    margin-left: auto; /* Pushes dots to the right */
+}
+
+/* Ensure the menu opens to the left so it doesn't go off-screen */
+.v2-post-more .dropdown-menu {
+    right: 0;
+    left: auto;
+    width: 200px;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 8px;
+    margin-top: 8px;
+}
+
+/* Override dropdown.css grid layout for this small menu */
+.v2-post-more .dropdown-column {
+    gap: 4px;
+}
+
+.v2-post-more .dropdown-item {
+    padding: 8px 12px;
+    gap: 10px;
+}
+
+/* Use is-open class from ui-util.js */
+.v2-post-more.is-open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 .v2-profile-info {
     display: flex;
     flex-direction: column;

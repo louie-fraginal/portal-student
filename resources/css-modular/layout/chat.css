@@ -365,6 +365,40 @@ body.dark-mode .message-bubble-wrapper:not(.is-me) .message-bubble {
     justify-content: flex-end;
 }
 
+/* Message Options Dropdown */
+.message-options {
+    flex-shrink: 0;
+}
+
+.message-options .dropdown-menu {
+    width: 180px;
+    grid-template-columns: 1fr;
+    padding: 8px;
+    margin-top: 4px;
+    gap: 0;
+    /* Ensure it doesn't get hidden by scroll container if possible */
+    z-index: 1000;
+}
+
+.message-options .dropdown-column {
+    gap: 4px;
+}
+
+.message-options .dropdown-item {
+    padding: 8px 12px;
+    gap: 10px;
+}
+
+.message-bubble-wrapper.is-me .message-options .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.message-bubble-wrapper:not(.is-me) .message-options .dropdown-menu {
+    left: 0;
+    right: auto;
+}
+
 /* Chatbox */
 .chat-input-container {
     padding: 20px 24px;

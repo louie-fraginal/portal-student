@@ -488,11 +488,12 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
                 image_2: imageUrls[1] || null,
                 image_3: imageUrls[2] || null,
                 image_4: imageUrls[3] || null,
-                image_5: imageUrls[4] || null
+                image_5: imageUrls[4] || null,
+                type: 'dept'
             };
 
             const { error } = await window.supabaseClient
-                .from('department_posts')
+                .from('pending_posts')
                 .insert([deptPostData])
 
             if (error) throw error;
@@ -504,11 +505,13 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
                 image_2: imageUrls[1] || null,
                 image_3: imageUrls[2] || null,
                 image_4: imageUrls[3] || null,
-                image_5: imageUrls[4] || null
+                image_5: imageUrls[4] || null,
+                type: 'user'
             };
 
             const { error } = await window.supabaseClient
-                .from('user_posts')
+            // from user_posts to pending_posts (to be handled by admin)
+                .from('pending_posts')
                 .insert([postData]);
 
             if (error) throw error;
@@ -755,9 +758,27 @@ async function renderMessages(messages, currentUserId, currentName) {
         return `
             <div class="message-bubble-wrapper ${isMe ? 'is-me' : ''}">
                 <span class="chat-username">${msg.profiles?.full_name || ''}</span>
-                <div class="message-bubble">
-                    ${text ? text : ''}
-                    ${gif && gif.length > 0 ? gif.map(url => `<img src="${url}" class="chat-gif-embed" />`).join('') : ''}
+                <div style="display: flex; align-items: center; gap: 4px; ${isMe ? 'flex-direction: row-reverse;' : ''}">
+                    <div class="message-bubble">
+                        ${text ? text : ''}
+                        ${gif && gif.length > 0 ? gif.map(url => `<img src="${url}" class="chat-gif-embed" />`).join('') : ''}
+                    </div>
+
+                    <div class="dropdown message-options">
+                        <button class="dropdown-trigger" style="background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; font-size: 1rem;">
+                            ⋮
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-column">
+                                <a href="#" class="dropdown-item" onclick="window.reportMessage(event, '${msg.id}')">
+                                    <div class="dropdown-info">
+                                        <div class="dropdown-title">Report</div>
+                                        <p class="dropdown-desc" style="font-size: 0.7rem;">Notify moderators about this message.</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="message-meta">
                     ${time} ${isMe ? '✓' : ''}
@@ -771,6 +792,37 @@ async function renderMessages(messages, currentUserId, currentName) {
     setTimeout(() => container.scrollTop = container.scrollHeight, 10);
 }
 
+window.reportMessage = async (event, msgId) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const { data: msg, error: fetch_error } = await window.supabaseClient
+        .from('message')
+        .select('*')
+        .eq('id', msgId)
+        .single();
+
+    const dropdown = event.target.closest('.dropdown');
+    if (dropdown) dropdown.classList.remove('is-open');
+
+    const reason = prompt("Why are you reporting this message?");
+    if (reason) {
+        const newValue = { ...msg, reason: reason, reported_message_id: msgId };
+        delete newValue.id;
+
+        const { data: rejected_msg, error: report_error } = await window.supabaseClient
+            .from('reported_messages')
+            .insert(newValue);
+
+        if (report_error) {
+            console.error("Report failed:", report_error);
+        } else {
+            console.log(`Message ${msgId} reported for: ${reason}`);
+            alert("Thank you. Our moderators will review this message.");
+        }
+    }
+};
+
 async function appendSingleMessage(msg, currentUserId) {
     const container = document.querySelector('.messages-wrapper');
     if (!container) return;
@@ -782,10 +834,28 @@ async function appendSingleMessage(msg, currentUserId) {
     const { text, gifs } = await parseMessageContent(msg.text);
     const msgHTML = `
         <div class="message-bubble-wrapper ${isMe ? 'is-me' : ''}">
-            <span class="chat-username">${msg?.profiles.full_name || ''}</span>
-            <div class="message-bubble">
-                ${text ? text : ''}
-                ${gifs ? gifs.map(url => `<img src="${url}" class="chat-gif-embed" alt="${url}" />`).join('') : ''}            
+            <span class="chat-username">${msg?.profiles?.full_name || ''}</span>
+            <div style="display: flex; align-items: center; gap: 4px; ${isMe ? 'flex-direction: row-reverse;' : ''}">
+                <div class="message-bubble">
+                    ${text ? text : ''}
+                    ${gifs ? gifs.map(url => `<img src="${url}" class="chat-gif-embed" alt="${url}" />`).join('') : ''}            
+                </div>
+
+                <div class="dropdown message-options">
+                    <button class="dropdown-trigger" style="background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; font-size: 1rem;">
+                        ⋮
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-column">
+                            <a href="#" class="dropdown-item" onclick="window.reportMessage(event, '${msg.id}')">
+                                <div class="dropdown-info">
+                                    <div class="dropdown-title">Report</div>
+                                    <p class="dropdown-desc" style="font-size: 0.7rem;">Notify moderators about this message.</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="message-meta">
                 ${time} ${isMe ? '✓' : ''}

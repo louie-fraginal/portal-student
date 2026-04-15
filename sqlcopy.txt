@@ -64,6 +64,20 @@ CREATE TABLE public.notices (
   image_url text,
   CONSTRAINT notices_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.pending_posts (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  author_id uuid NOT NULL,
+  content text,
+  image_1 text,
+  image_2 text,
+  image_3 text,
+  image_4 text,
+  image_5 text,
+  type text,
+  CONSTRAINT pending_posts_pkey PRIMARY KEY (id),
+  CONSTRAINT pending_posts_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id)
+);
 CREATE TABLE public.post_comments (
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   user_id uuid NOT NULL,
@@ -90,6 +104,54 @@ CREATE TABLE public.profiles (
   cover_photo text,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.rejected_posts (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  author_id uuid NOT NULL,
+  content text NOT NULL,
+  image_1 text,
+  image_2 text,
+  image_3 text,
+  image_4 text,
+  image_5 text,
+  type text,
+  CONSTRAINT rejected_posts_pkey PRIMARY KEY (id),
+  CONSTRAINT rejected_table_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.reported_messages (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  text text NOT NULL,
+  chat_room_id uuid NOT NULL,
+  author_id uuid NOT NULL,
+  author_name text,
+  reported_message_id uuid NOT NULL,
+  reason text,
+  CONSTRAINT reported_messages_pkey PRIMARY KEY (id),
+  CONSTRAINT reported_messages_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id),
+  CONSTRAINT reported_messages_chat_room_id_fkey FOREIGN KEY (chat_room_id) REFERENCES public.chat_room(id),
+  CONSTRAINT reported_messages_reported_message_id_fkey FOREIGN KEY (reported_message_id) REFERENCES public.message(id)
+);
+CREATE TABLE public.reported_posts (
+  reported_post_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  author_id uuid NOT NULL,
+  content text NOT NULL,
+  image_1 text,
+  image_2 text,
+  image_3 text,
+  image_4 text,
+  image_5 text,
+  type text,
+  reason text,
+  author_name text,
+  department_key text,
+  profile_picture text,
+  title text,
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  CONSTRAINT reported_posts_pkey PRIMARY KEY (id),
+  CONSTRAINT reported_posts_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id)
 );
 CREATE TABLE public.user_post_likes (
   post_id uuid NOT NULL,

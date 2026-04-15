@@ -197,9 +197,9 @@ function renderPostCard(post, container, hasLiked, userId) {
     const accentColor = window.DEPT_MAP[deptKey]?.color || 'var(--v2-green)';
     const isDept = post.type === 'dept';
     const authorName = isDept ? window.DEPT_MAP[deptKey].name : post.author_name || 'Student';
-    const avatarHtml = post.profile_picture 
-    ? `<img src="${post.profile_picture}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
-    : authorName.charAt(0);
+    const avatarHtml = post.profile_picture
+        ? `<img src="${post.profile_picture}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+        : authorName.charAt(0);
 
     postCard.style.setProperty('--post-accent', accentColor);
     const timeAgo = window.formatTimeAgo(post.timestamp);
@@ -210,20 +210,40 @@ function renderPostCard(post, container, hasLiked, userId) {
         : '';
 
     postCard.innerHTML = `
-        <div class="v2-post-header" ${headerClickAction}>
-            <div class="v2-post-avatar" style="box-shadow: 0 0 10px ${accentColor}44; border-color: ${accentColor};">
-                ${avatarHtml}
+        <div class="v2-post-header" style="position: relative; display: flex; align-items: center; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" ${headerClickAction}>
+                <div class="v2-post-avatar" style="box-shadow: 0 0 10px ${accentColor}44; border-color: ${accentColor};">
+                    ${avatarHtml}
+                </div>
+                <div class="v2-post-meta">
+                    <div class="v2-author-name" style="${!isDept ? 'text-decoration: underline transparent; transition: text-decoration 0.2s;' : ''}" onmouseover="this.style.textDecoration='${!isDept ? 'underline' : 'none'}'" onmouseout="this.style.textDecoration='none'">${authorName}</div>
+                    <div class="v2-post-time">${timeAgo}</div>
+                </div>
             </div>
-            <div class="v2-post-meta">
-                <div class="v2-author-name" style="${!isDept ? 'text-decoration: underline transparent; transition: text-decoration 0.2s;' : ''}" onmouseover="this.style.textDecoration='${!isDept ? 'underline' : 'none'}'" onmouseout="this.style.textDecoration='none'">${authorName}</div>
-                <div class="v2-post-time">${timeAgo}</div>
+
+            <div class="dropdown v2-post-more">
+                <button class="dropdown-trigger" style="background: none; border: none; cursor: pointer; color: var(--text-muted);">
+                    ⋮
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-column">
+                        <a href="#" class="dropdown-item" onclick="window.reportPost(event, '${post.id}')">
+                            <div class="dropdown-info">
+                                <div class="dropdown-title">Report</div>
+                                <p class="dropdown-desc" style="font-size: 0.7rem;">Notify moderators about this post.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
+
         <div class="v2-post-content">
             ${post.title ? `<h2 style="margin-top:0"> ${post.title} </h2>` : ''}
             <p>${post.content}</p>
             ${post.image_1 ? `<img src="${post.image_1}" alt="Post Image" class="v2-content-image" loading="lazy">` : ''}
         </div>
+
         <div class="v2-post-actions">
             <button class="v2-action-btn ${hasLiked ? 'active' : ''}" onclick="window.toggleLike(event, '${post.id}', '${post.type}')">
                 <span class="v2-icon">❤</span>
@@ -237,6 +257,7 @@ function renderPostCard(post, container, hasLiked, userId) {
     `;
 
     postCard.addEventListener('click', (e) => {
+        if (e.target.closest('.dropdown')) return;
         window.openPostModal(post, images, false);
     });
 
@@ -244,6 +265,42 @@ function renderPostCard(post, container, hasLiked, userId) {
 
     window.updateLikeDisplay(post.id, post.type);
     window.updateCommentCountUI(post.id);
+}
+
+window.reportPost = async (event, postId) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const { data: post, error: to_error } = await window.supabaseClient
+        .from('unified_social_feed_new')
+        .select('*')
+        .eq('id', postId)
+        .single();
+
+    const dropdown = event.target.closest('.dropdown');
+    if (dropdown) dropdown.classList.remove('is-open');
+
+
+
+    const reason = prompt("Why are you reporting this post?");
+    if (reason) {
+        const newValue = { ...post, reason: reason, reported_post_id: postId }
+        delete newValue.id;
+
+
+        const { data: rejected_post, error: report_error } = await window.supabaseClient
+            .from('reported_posts')
+            .insert(newValue);
+
+        console.error(rejected_post);
+        if (report_error) console.error(report_error);
+
+        console.log(`Post ${postId} reported for: ${reason}`);
+    }
+};
+
+window.showPostOptions = async (event, postId) => {
+    event.stopPropagation();
 }
 
 function renderRecently(recents) {

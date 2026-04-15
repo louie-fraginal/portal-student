@@ -101,10 +101,10 @@ body {
 
 main {
     flex: 1;
-    /* Keeps the gap for the sidebar */
+    /* Keeps the 260px gap for the fixed sidebar */
     margin-left: var(--sidebar-width); 
-    /* Centers content if screen is wider than 1400px, 
-       but maintains the left sidebar gap */
+    
+    /* Allows the right side to expand, centering content on huge screens */
     margin-right: auto;
     margin-top: 0;
     margin-bottom: 80px;
@@ -205,6 +205,8 @@ label {
 .activity-info {
     display: flex;
     flex-direction: column;
+    word-break: break-all;
+    padding-right: 5px;
 }
 
 .activity-user {
@@ -311,12 +313,6 @@ nav {
     color: var(--text-main);
 }
 
-main {
-    max-width: 1400px;
-    margin: 0 auto 80px auto;
-    padding: 0 5%;
-}
-
 .admin-section {
     display: none;
     grid-template-columns: 1fr 1fr;
@@ -325,8 +321,20 @@ main {
     margin-bottom: 60px;
 }
 
+.modal-gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+	gap: 10px;
+	margin-top: 15px;
+}
+
+.image {
+    height: 200px;
+    object-fit: contain;
+}
+
 .admin-section.active {
-    display: grid;
+    display: block;
 }
 
 @keyframes fadeIn {

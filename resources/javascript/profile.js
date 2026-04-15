@@ -190,7 +190,8 @@ async function updateCounts(postId) {
     if (commentEl) commentEl.textContent = commentCount || 0;
 }
 
-async function clickAvatar() {
+async function clickAvatar(event) {
+    event.stopPropagation();
     const avatarDiv = document.getElementById('profile-avatar')
     const fileInput = document.getElementById('fileSelect')
 
