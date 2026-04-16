@@ -7,6 +7,89 @@ window.isFetchingPosts = false;
 window.hasMorePosts = true;
 const POSTS_PER_PAGE = 20;
 
+window.DEPT_MAP = {
+    // Academic Organizations
+    'JPIA': {
+        name: 'Junior Philippine Institute of Accountants',
+        shortName: 'JPIA',
+        color: '#ef4444',
+        intro: 'The premier organization for accountancy students at NCBA, dedicated to professional excellence and integrity in the field of accounting.',
+        fb_link: 'https://web.facebook.com/jpia.ncbaf',
+        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200'
+    },
+    'BSBA': {
+        name: 'Business Administration',
+        shortName: 'BSBA',
+        color: '#3b82f6',
+        intro: 'Shaping the next generation of business leaders and entrepreneurs through innovative management education and practical experience.',
+        fb_link: 'https://web.facebook.com/profile.php?id=100054337128757',
+        image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200'
+    },
+    'ISSOC': {
+        name: 'Information Systems Student Organization Council',
+        shortName: 'ISSOC',
+        color: '#785c88',
+        intro: 'Advancing technological literacy and innovation within the Information Systems community at NCBA.',
+        fb_link: 'https://web.facebook.com/ncba.issoc',
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200'
+    },
+    'SABELA': {
+        name: 'Society of AB & Education Students of Liberal Arts',
+        shortName: 'SABELA',
+        color: '#ec4899',
+        intro: 'Promoting excellence in the arts, education, and social sciences, fostering a community of critical thinkers and educators.',
+        fb_link: 'https://web.facebook.com/ncbasabela',
+        image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=1200'
+    },
+    'HM': {
+        name: 'Hospitality Management',
+        shortName: 'HM',
+        color: '#f59e0b',
+        intro: 'Training students for global careers in the hospitality and tourism industry with a focus on service excellence and culinary arts.',
+        fb_link: 'https://web.facebook.com/ncbachmofficial',
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1200'
+    },
+
+    // Official Campus Units
+    'ACADEMIC': {
+        name: 'Academic Affairs',
+        shortName: 'ACADEMIC',
+        color: '#6366f1',
+        intro: 'Official updates regarding academic schedules, policies, and curriculum.',
+        image: 'https://images.unsplash.com/photo-1523050853064-85a17f009c5f?auto=format&fit=crop&q=80&w=1200'
+    },
+    'FACILITY': {
+        name: 'Campus Facilities',
+        shortName: 'FACILITY',
+        color: '#ec4899',
+        intro: 'Updates regarding campus infrastructure, maintenance, and room assignments.',
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200'
+    },
+    'LIBRARY': {
+        name: 'Library Services',
+        shortName: 'LIBRARY',
+        color: '#10b981',
+        intro: 'Information about library hours, new resources, and study spaces.',
+        image: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=1200'
+    },
+    'CAMPUS WIDE': {
+        name: 'Campus Wide',
+        shortName: 'CAMPUS',
+        color: '#64748b',
+        intro: 'General announcements applicable to the entire NCBA community.',
+        image: 'https://images.unsplash.com/photo-1541339907198-e08756ed8108?auto=format&fit=crop&q=80&w=1200'
+    },
+    'ANNOUNCEMENT': {
+        name: 'Official Announcements',
+        shortName: 'ANNOUNCEMENT',
+        color: '#7bff83',
+        intro: 'The official announcements from the National College Business and Arts Fairview.',
+        fb_link: '',
+        image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=1200'
+    }
+};
+
+
 window.renderEvents = function (events) { renderHeroAnnouncement(events); };
 window.renderRecents = function (recents) { renderRecently(recents); };
 
@@ -355,37 +438,56 @@ async function initCreatePostOverlay() {
     console.log("auth type: ", user.user_metadata.user_type);
     console.log('actual type: ', userType);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const deptId = urlParams.get('dept') || '';
+    const deptId = userDepartment
     const dept = window.DEPT_MAP[deptId];
 
     console.log(dept);
+    console.log(deptId);
 
     const floatingActions = document.getElementById('v2-floating-actions');
-    if (userType === 'dept' && userDepartment === dept.shortName) {
-        floatingActions.innerHTML = `
+    // // For departmental posts.
+    // if (userType === 'dept' && userDepartment === dept.shortName) {
+    //     floatingActions.innerHTML = `
+    //     <button class="v2-fab secondary" onclick="window.openChat(event)">
+    //         <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    //                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    //                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    //         </svg></span>
+    //     <button class="v2-fab" onclick="window.createPostOverlay('dept', '${userDepartment}')">
+    //         <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    //                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    //                 <line x1="12" y1="5" x2="12" y2="19"></line>
+    //                 <line x1="5" y1="12" x2="19" y2="12"></line>
+    //             </svg></span>
+    //     </button>
+    //     `;
+    // }
+    // // For official announcements
+    // if (userType === 'official' && userDepartment === 'official') {
+    //     floatingActions.innerHTML = `
+    //     <button class="v2-fab secondary" onclick="window.openChat(event)">
+    //         <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    //                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    //                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    //         </svg></span>
+    //     <button class="v2-fab" onclick="window.createPostOverlay('official', 'official')">
+    //         <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    //                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    //                 <line x1="12" y1="5" x2="12" y2="19"></line>
+    //                 <line x1="5" y1="12" x2="19" y2="12"></line>
+    //             </svg></span>
+    //     </button>
+    //     `;
+    // Default for Students
+    // } 
+    if (userType === 'student') {
+         floatingActions.innerHTML = `
         <button class="v2-fab secondary" onclick="window.openChat(event)">
             <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg></span>
-        <button class="v2-fab" onclick="window.createPostOverlay('dept', '${userDepartment}')">
-            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg></span>
-        </button>
-        `;
-    }
-    if (userType === 'official' && userDepartment === 'official') {
-        floatingActions.innerHTML = `
-        <button class="v2-fab secondary" onclick="window.openChat(event)">
-            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg></span>
-        <button class="v2-fab" onclick="window.createPostOverlay('official', 'official')">
+        <button class="v2-fab" onclick="window.createPostOverlay()">
             <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
