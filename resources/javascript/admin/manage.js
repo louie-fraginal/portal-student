@@ -230,15 +230,17 @@ window.approvePost = async function approvePost(id) {
                 image_4: post.image_4 || null,
                 image_5: post.image_5 || null,
             };
-            const { userPostsError } = await window.supabaseClient
+            const { error: userPostsError } = await window.supabaseClient
                 .from('user_posts')
                 .insert(postData);
-            console.log(postData);
+            
+            if (userPostsError) return console.error(deptPostsError);
         } else if (post.type === 'dept') {
+            console.log(post);
             const deptPostData = {
                 author_id: post.author_id,
                 content: post.content,
-                department_key: post.departmentId,
+                department_key: post.department_key,
                 title: post.title,
                 image_1: post.image_1 || null,
                 image_2: post.image_2 || null,
@@ -246,9 +248,11 @@ window.approvePost = async function approvePost(id) {
                 image_4: post.image_4 || null,
                 image_5: post.image_5 || null
             };
-            const { deptPostsError } = await window.supabaseClient
+            const { error: deptPostsError } = await window.supabaseClient
                 .from('department_posts')
                 .insert(deptPostData);
+
+            if (deptPostsError) return console.error(deptPostsError);
         }
 
         const { error: deleteError } = await window.supabaseClient
@@ -400,7 +404,7 @@ window.deleteReportedItem = async function (reportId, reportTable, originalId, p
             .eq('id', reportId);
 
         alert("Item deleted successfully.");
-        refreshReports();
+        refreshReports();   
     } catch (err) {
         console.error("Error deleting reported item:", err);
         alert("Failed to delete item: " + err.message);

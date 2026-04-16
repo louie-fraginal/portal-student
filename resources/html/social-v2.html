@@ -22,8 +22,10 @@
     <script src="../javascript/localhost.js"></script>
     <script src="../javascript/index.js"></script>
     <script src="../javascript/ui-util.js"></script>
-    <script src="../javascript/social-v2.js"></script>
     <script src="../javascript/darkmode.js"></script>
+    <script src="../javascript/social-v2.js"></script>
+
+
     <script>
         window.checkAuth();
     </script>
@@ -34,7 +36,7 @@
         <div class="logo">NCBA.LIFE</div>
 
         <div class="nav-links">
-            
+
             <div class="dropdown">
                 <button class="dropdown-trigger">
                     Explore
@@ -282,23 +284,11 @@
         </aside>
     </div>
 
-    <div class="v2-floating-actions">
-        <button class="v2-fab secondary" onclick="window.openChat(event)">
-            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg></span>
-        </button>
-        <button class="v2-fab" onclick="window.createPostOverlay()">
-            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg></span>
-        </button>
+    <div class="v2-floating-actions" id="v2-floating-actions">
     </div>
 
 
 </body>
 <script src="../javascript/mobileNav.js"></script>
+
 </html>

@@ -87,6 +87,7 @@ async function initSocial() {
     await window.renderSocialFeed(true);
     // Setup infinite scroll after initial load
     window.setupInfiniteScroll();
+    await initCreatePostOverlay();
 }
 
 window.renderSocialFeed = async function (isInitialLoad = true) {
@@ -333,6 +334,69 @@ function renderRecently(recents) {
     container.appendChild(track);
 }
 
+async function initCreatePostOverlay() {
+    let user = window.currentUser;
+    if (!user) {
+        const { data } = await window.supabaseClient.auth.getUser();
+        user = data.user;
+        window.currentUser = user;
+        window.currentUserId = user.id;
+    }
+
+    const { data: profileData } = await window.supabaseClient
+        .from('profiles')
+        .select('user_type, department')
+        .eq('id', user.id)
+        .single()
+
+    const userDepartment = profileData.department;
+    const userType = profileData ? profileData.user_type : user.user_metadata.user_type;
+
+    console.log("auth type: ", user.user_metadata.user_type);
+    console.log('actual type: ', userType);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const deptId = urlParams.get('dept') || '';
+    const dept = window.DEPT_MAP[deptId];
+
+    console.log(dept);
+
+    const floatingActions = document.getElementById('v2-floating-actions');
+    if (userType === 'dept' && userDepartment === dept.shortName) {
+        floatingActions.innerHTML = `
+        <button class="v2-fab secondary" onclick="window.openChat(event)">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg></span>
+        <button class="v2-fab" onclick="window.createPostOverlay('dept', '${userDepartment}')">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg></span>
+        </button>
+        `;
+    }
+    if (userType === 'official' && userDepartment === 'official') {
+        floatingActions.innerHTML = `
+        <button class="v2-fab secondary" onclick="window.openChat(event)">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg></span>
+        <button class="v2-fab" onclick="window.createPostOverlay('official', 'official')">
+            <span class="v2-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg></span>
+        </button>
+        `;
+    }
+}
+
+
 function renderHeroAnnouncement(events) {
     const container = document.getElementById('main-hero-area');
     if (!container) return;
@@ -463,4 +527,5 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fallback: wait for event but also setup loader
         window.setupInfiniteScroll();
     }
+
 });

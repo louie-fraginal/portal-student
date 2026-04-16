@@ -372,6 +372,20 @@ window.createPostOverlay = function (postType = 'user', departmentId = null) {
                 <textarea id="new-post-content" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Write something..."></textarea>
             </div>
 
+            ${postType === 'official' ? `
+                <div class="input-group">
+                <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">DEPARTMENT</label>
+                <select name="official_department" id="official_department" required>
+                    <option value="">Pick a department...</option>
+                    <option value="CAMPUS WIDE">CAMPUS WIDE</option>
+                    <option value="COLLEGE DEPARTMENT">COLLEGE DEPARTMENT</option>
+                    <option value="LIBRARY">LIBRARY</option>
+                    <option value="GUIDANCE OFFICE">GUIDANCE OFFICE</option>
+                    <option value="OSA">OSA</option>
+                    <option value="ACADEMIC">ACADEMIC</option>
+                </select>
+            </div>` : ''}
+
             <div class="upload-section" style="margin-top: 20px;">
                 <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 10px;">
                     ATTACH IMAGES (MAX 5)
@@ -453,10 +467,21 @@ window.createPostOverlay = function (postType = 'user', departmentId = null) {
             }
         }
 
+        if (postType === 'official') {
+            const department = document.getElementById('official_department').value;
+
+            if (!department) {
+                window.openAlert('warning', "Department posts must have a department.");
+                return;
+            }
+        }
+
+        const dynamicDepartmentId = (postType === 'official' ? document.getElementById('official_department').value : departmentId)
+
 
         if (content || selectedFiles.length > 0) {
             // Updated to handle both content and images
-            window.handlePostSubmission(content, selectedFiles, postType, departmentId, title);
+            window.handlePostSubmission(content, selectedFiles, postType, dynamicDepartmentId, title);
             overlay.remove();
         }
     };
@@ -497,7 +522,8 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
                 .insert([deptPostData])
 
             if (error) throw error;
-        } else {
+
+        } else if (postType === 'user') {
             const postData = {
                 content: content,
                 author_id: user.id,
@@ -514,6 +540,17 @@ window.handlePostSubmission = async function (content, selectedFiles = [], postT
                 .from('pending_posts')
                 .insert([postData]);
 
+            if (error) throw error;
+        } else if (postType === 'official') {
+            const postData = {
+                content: content,
+                image_url: imageUrls[0] || null,
+                department_key: departmentId
+            }
+
+            const {error} = await window.supabaseClient
+                .from('notices')
+                .insert([postData]);
             if (error) throw error;
         }
 
