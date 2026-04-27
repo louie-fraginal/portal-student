@@ -364,9 +364,7 @@ window.reportPost = async (event, postId) => {
     const dropdown = event.target.closest('.dropdown');
     if (dropdown) dropdown.classList.remove('is-open');
 
-
-
-    const reason = prompt("Why are you reporting this post?");
+    const reason = await window.customPrompt("Why are you reporting this post?", "Type your reason here...");
     if (reason) {
         const newValue = { ...post, reason: reason, reported_post_id: postId }
         delete newValue.id;
@@ -380,6 +378,7 @@ window.reportPost = async (event, postId) => {
         if (report_error) console.error(report_error);
 
         console.log(`Post ${postId} reported for: ${reason}`);
+        window.openAlert('warning', `Post reported for: ${reason}`);
     }
 };
 

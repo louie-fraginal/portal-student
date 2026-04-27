@@ -245,6 +245,105 @@
     align-items: center;
 }
 
+/* Custom Prompt Modal - Standard Variables */
+.custom-prompt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.custom-prompt-overlay.active {
+    opacity: 1;
+}
+
+.custom-prompt-card {
+    background: var(--bg-secondary, #1a1a1a); /* Fallback to dark if var missing */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 90%;
+    max-width: 420px;
+    padding: 28px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.custom-prompt-overlay.active .custom-prompt-card {
+    transform: scale(1) translateY(0);
+}
+
+.custom-prompt-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-main, #ffffff);
+    line-height: 1.4;
+}
+
+.custom-prompt-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main, #ffffff);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 24px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.custom-prompt-input:focus {
+    border-color: var(--accent-primary, #007aff);
+}
+
+.custom-prompt-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.prompt-btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.1s, filter 0.2s;
+}
+
+.prompt-btn:active {
+    transform: scale(0.98);
+}
+
+.prompt-btn.cancel {
+    background: transparent;
+    color: var(--text-muted, #888);
+}
+
+.prompt-btn.confirm {
+    background: var(--accent-primary, #007aff);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+}
+
+.prompt-btn.confirm:hover {
+    filter: brightness(1.1);
+}
+
 .fadeIn {
     animation: slideUpFade 0.4s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
@@ -605,3 +704,170 @@ textarea {
     outline-width: 0;
     outline: none;
 }
+
+/* Mobile Optimization for Post Modals */
+@media (max-width: 820px) {
+    .post-modal-overlay {
+        display: block !important;
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        background: var(--bg-color) !important;
+        padding: 0 !important;
+        z-index: 2000 !important;
+    }
+
+    .post-modal-card {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: var(--bg-color) !important;
+        overflow: visible !important;
+    }
+
+    .post-modal-card.ig-layout {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .ig-layout {
+        display: block !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    .modal-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color);
+        padding: 0 !important;
+        height: auto !important;
+        flex: none !important;
+        background: #000; /* Better for image presentation */
+    }
+
+    .modal-image {
+        border-radius: 0 !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 70vh !important;
+        object-fit: contain !important;
+    }
+
+    .modal-gallery {
+        padding: 10px !important;
+        background: var(--bg-color);
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    .modal-comments-sidebar {
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background: var(--bg-color) !important;
+        overflow: visible !important;
+    }
+
+    .comments-header {
+        padding: 20px !important;
+        border-bottom: none !important;
+    }
+
+    .modal-content {
+        max-width: 100% !important;
+        padding: 20px !important;
+        font-size: 1.05rem !important;
+        line-height: 1.6 !important;
+        color: var(--text-main) !important;
+        border-bottom: none !important;
+    }
+
+    .notice-title, .notice-title-standard {
+        font-size: 1.8rem !important;
+        font-weight: 800 !important;
+        padding: 10px 20px !important;
+        margin: 0 !important;
+        color: var(--text-main) !important;
+        line-height: 1.2 !important;
+    }
+
+    .tag {
+        font-size: 0.75rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        padding: 8px 16px !important;
+        border-radius: 8px !important;
+        margin-bottom: 10px !important;
+        display: inline-block !important;
+    }
+
+    .comments-scroll-area {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 20px !important;
+    }
+
+    .comment-item-footer {
+        padding: 15px 0 !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .close-btn {
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        z-index: 3000 !important;
+        background: rgba(0, 0, 0, 0.6) !important;
+        color: white !important;
+        width: 44px;
+        height: 44px;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        backdrop-filter: blur(8px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        font-size: 1.5rem !important;
+        padding: 0 !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+
+    .comment-input-area {
+        margin-top: 20px !important;
+        padding: 15px 20px 40px 20px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        background: var(--card-bg) !important;
+        border-top: 1px solid var(--border-color) !important;
+        z-index: 100 !important;
+    }
+
+    #new-comment-input {
+        background: var(--input-bg) !important;
+        height: 50px !important;
+        border-radius: 25px !important;
+        padding: 0 20px !important;
+        font-size: 1rem !important;
+    }
+}
+

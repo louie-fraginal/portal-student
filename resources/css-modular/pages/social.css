@@ -423,6 +423,11 @@ aside::-webkit-scrollbar {
 }
 
 @media (max-width: 820px) {
+    body {
+        overflow: auto;
+        height: auto;
+    }
+
     .v2-wrapper {
         grid-template-columns: 1fr;
         height: auto;
@@ -432,7 +437,7 @@ aside::-webkit-scrollbar {
         overflow: visible;
     }
 
-    aside {
+    .v2-wrapper aside {
         display: none !important;
     }
 

@@ -85,7 +85,10 @@ window.checkUserProfile = async function () {
 
     if (userType === 'dept') {
         window.location.href = `department.html?dept=${userDepartment}`;
-    } else {
+    }else if(userType === 'official') {
+        window.location.href=`department.html?dept=ANNOUNCEMENT`;
+    }
+    else {
         window.location.href = 'profile.html';
     }
 }
@@ -344,6 +347,53 @@ window.showFullContent = function (postId) {
         // A simple trick is to check if we stored it in a global map.
         element.innerHTML = element.getAttribute('data-full-content');
     }
+};
+
+window.customPrompt = function(message, placeholder = "Type here...") {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-prompt-overlay';
+        overlay.innerHTML = `
+            <div class="custom-prompt-card">
+                <div class="custom-prompt-title">${message}</div>
+                <input type="text" class="custom-prompt-input" placeholder="${placeholder}" id="custom-prompt-field">
+                <div class="custom-prompt-actions">
+                    <button class="prompt-btn cancel">Cancel</button>
+                    <button class="prompt-btn confirm">Submit</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        
+        // Focus and Animate
+        const input = overlay.querySelector('#custom-prompt-field');
+        setTimeout(() => {
+            overlay.classList.add('active');
+            input.focus();
+        }, 10);
+
+        const closePrompt = (value) => {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                overlay.remove();
+                resolve(value);
+            }, 250);
+        };
+
+        // Event Listeners
+        overlay.querySelector('.confirm').onclick = () => closePrompt(input.value.trim() || null);
+        overlay.querySelector('.cancel').onclick = () => closePrompt(null);
+        
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closePrompt(null);
+        });
+
+        input.onkeydown = (e) => {
+            if (e.key === 'Enter') closePrompt(input.value.trim() || null);
+            if (e.key === 'Escape') closePrompt(null);
+        };
+    });
 };
 
 window.createPostOverlay = function (postType = 'user', departmentId = null) {
@@ -842,7 +892,7 @@ window.reportMessage = async (event, msgId) => {
     const dropdown = event.target.closest('.dropdown');
     if (dropdown) dropdown.classList.remove('is-open');
 
-    const reason = prompt("Why are you reporting this message?");
+    const reason = await window.customPrompt("Why are you reporting this message?", "Type your reason here...");
     if (reason) {
         const newValue = { ...msg, reason: reason, reported_message_id: msgId };
         delete newValue.id;
@@ -855,7 +905,7 @@ window.reportMessage = async (event, msgId) => {
             console.error("Report failed:", report_error);
         } else {
             console.log(`Message ${msgId} reported for: ${reason}`);
-            alert("Thank you. Our moderators will review this message.");
+            window.openAlert("warning", "Thank you. Our moderators will review this message.");
         }
     }
 };
